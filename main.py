@@ -9,16 +9,16 @@ from firebase_admin import credentials, initialize_app, db
 
 
 # Credenciales de Firebase, comprobación en el servidor de Render.
-credentials = ""
+credentialsFirebase = ""
 firebase_json = os.getenv("FIREBASE_CREDENTIALS")
 
 if firebase_json:
     print("✅ Variable cargada correctamente")
     try:
-        credentials = json.loads(firebase_json)
+        credentialsFirebase = json.loads(firebase_json)
         print("🔐 Contenido válido del JSON:")
-        print("Proyecto:", credentials.get("project_id"))
-        print("Email:", credentials.get("client_email"))
+        print("Proyecto:", credentialsFirebase.get("project_id"))
+        print("Email:", credentialsFirebase.get("client_email"))
     except:
         print("❌ Error al decodificar el JSON")
 else:
@@ -27,8 +27,8 @@ else:
 
 data = {}
 #Inicialización de la app de Firebase (solo una vez)
-if credentials != "":
-    cred = credentials.Certificate(credentials)
+if credentialsFirebase != "":
+    cred = credentials.Certificate(credentialsFirebase)
     initialize_app(cred, {
         'databaseURL': 'https://esp32-thesis-project-default-rtdb.firebaseio.com'
     })
