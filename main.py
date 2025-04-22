@@ -9,7 +9,7 @@ from firebase_admin import credentials, initialize_app, db
 
 
 # Credenciales de Firebase, comprobación en el servidor de Render.
-#Inicialización de la app de Firebase (solo una vez)
+# Inicialización de la app de Firebase (solo una vez)
 credentialsFirebase = {}
 data = {}
 firebase_json = os.getenv("FIREBASE_CREDENTIALS")
@@ -18,6 +18,7 @@ if firebase_json:
     print("✅ Variable cargada correctamente")
     try:
         credentialsFirebase = json.loads(firebase_json)
+        credentialsFirebase["private_key_id"] = credentialsFirebase.get("private_key_id").replace("\\n", "\n")
         print("🔐 Contenido válido del JSON:")
         print("Proyecto:", credentialsFirebase.get("project_id"))
         print("Email:", credentialsFirebase.get("client_email"))
@@ -29,6 +30,7 @@ else:
 
 
 if not firebase_admin._apps:
+    
     cred = credentials.Certificate(credentialsFirebase)
     initialize_app(cred, {
         'databaseURL': 'https://esp32-thesis-project-default-rtdb.firebaseio.com/'
