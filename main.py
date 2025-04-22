@@ -18,7 +18,7 @@ if firebase_json:
     print("✅ Variable cargada correctamente")
     try:
         credentialsFirebase = json.loads(firebase_json)
-        credentialsFirebase["private_key_id"] = credentialsFirebase.get("private_key_id").replace("\\n", "\n")
+        credentialsFirebase["private_key"] = credentialsFirebase.get("private_key").replace("\\n", "\n")
         print("🔐 Contenido válido del JSON:")
         print("Proyecto:", credentialsFirebase.get("project_id"))
         print("Email:", credentialsFirebase.get("client_email"))
