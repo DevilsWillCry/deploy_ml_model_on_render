@@ -9,7 +9,9 @@ from firebase_admin import credentials, initialize_app, db
 
 
 # Credenciales de Firebase, comprobación en el servidor de Render.
-credentialsFirebase = ""
+#Inicialización de la app de Firebase (solo una vez)
+credentialsFirebase = {}
+data = {}
 firebase_json = os.getenv("FIREBASE_CREDENTIALS")
 
 if firebase_json:
@@ -19,27 +21,21 @@ if firebase_json:
         print("🔐 Contenido válido del JSON:")
         print("Proyecto:", credentialsFirebase.get("project_id"))
         print("Email:", credentialsFirebase.get("client_email"))
+        cred = credentials.Certificate(credentialsFirebase)
+        initialize_app(cred, {
+            'databaseURL': 'https://esp32-thesis-project-default-rtdb.firebaseio.com'
+        })
+        ref = db.reference("/sensor/data")
+        data = ref.get()
     except:
         print("❌ Error al decodificar el JSON")
 else:
     print("❌ Variable de entorno no encontrada")
 
-
-data = {}
-#Inicialización de la app de Firebase (solo una vez)
-if credentialsFirebase != "":
-    cred = credentials.Certificate(credentialsFirebase)
-    initialize_app(cred, {
-        'databaseURL': 'https://esp32-thesis-project-default-rtdb.firebaseio.com'
-    })
-    ref = db.reference("/sensor/data")
-    data = ref.get()
-else:
-    cred = False
-    print("❌ Credenciales no cargadas")
-
-print(type(data))
-print(data)
+if data != {}:
+    print("✅ Datos cargados correctamente")
+    print(type(data))
+    print(data)
 
 app = FastAPI()
 
