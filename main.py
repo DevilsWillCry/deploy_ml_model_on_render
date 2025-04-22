@@ -3,11 +3,13 @@ import pandas as pd
 import firebase_admin
 import os
 import json
-from firebase_admin import credentials, db
+from firebase_admin import credentials, initialize_app, db
 
 
 
-#Inicialización de la app de Firebase (solo una vez)
+
+# Credenciales de Firebase, comprobación en el servidor de Render.
+credentials = ""
 firebase_json = os.getenv("FIREBASE_CREDENTIALS")
 
 if firebase_json:
@@ -23,6 +25,21 @@ else:
     print("❌ Variable de entorno no encontrada")
 
 
+data = {}
+#Inicialización de la app de Firebase (solo una vez)
+if credentials != "":
+    cred = credentials.Certificate(credentials)
+    initialize_app(cred, {
+        'databaseURL': 'https://esp32-thesis-project-default-rtdb.firebaseio.com'
+    })
+    ref = db.reference("/sensor/data")
+    data = ref.get()
+else:
+    cred = False
+    print("❌ Credenciales no cargadas")
+
+print(type(data))
+print(data)
 
 app = FastAPI()
 
