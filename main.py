@@ -21,16 +21,20 @@ if firebase_json:
         print("🔐 Contenido válido del JSON:")
         print("Proyecto:", credentialsFirebase.get("project_id"))
         print("Email:", credentialsFirebase.get("client_email"))
-        cred = credentials.Certificate(credentialsFirebase)
-        initialize_app(cred, {
-            'databaseURL': 'https://esp32-thesis-project-default-rtdb.firebaseio.com'
-        })
-        ref = db.reference("/sensor/data")
-        data = ref.get()
     except:
         print("❌ Error al decodificar el JSON")
 else:
     print("❌ Variable de entorno no encontrada")
+
+
+
+if not firebase_admin._apps:
+    cred = credentials.Certificate(credentialsFirebase)
+    initialize_app(cred, {
+        'databaseURL': 'https://esp32-thesis-project-default-rtdb.firebaseio.com/'
+    })
+    ref = db.reference("/sensor/data")
+    data = ref.get()
 
 if data != {}:
     print("✅ Datos cargados correctamente")
