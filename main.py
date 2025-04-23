@@ -7,7 +7,7 @@ from firebase_admin import credentials, initialize_app, db
 
 
 # Credenciales de Firebase, comprobación en el servidor de Render.
-# Inicialización de la app de Firebase (solo una vez)
+# Inicialización de la app de Firebase (solo una vez).
 credentialsFirebase = {}
 data = {}
 firebase_json = os.getenv("FIREBASE_CREDENTIALS")
@@ -40,8 +40,10 @@ if data != {}:
     print("✅ Datos cargados correctamente")
     print(type(data))
     print(data)
-    for i in data.values():
-        print(i, end="\n ")
+    for key, value in data.items():
+        print(key)
+        for subkey, subvalue in value.items():
+            print(f"{subvalue}")
 
 app = FastAPI()
 
