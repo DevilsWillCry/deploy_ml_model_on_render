@@ -38,8 +38,6 @@ if not firebase_admin._apps:
 
 if data != {}:
     print("✅ Datos cargados correctamente")
-    print(type(data))
-    print(data)
     for key, value in data.items():
         print(key)
         for subkey, subvalue in value.items():
