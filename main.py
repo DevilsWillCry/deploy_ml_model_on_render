@@ -33,7 +33,7 @@ if not firebase_admin._apps:
     initialize_app(cred, {
         'databaseURL': 'https://esp32-thesis-project-default-rtdb.firebaseio.com/'
     })
-    ref = db.reference("/sensor/data")
+    ref = db.reference("/sensor/data/muestra_actual")
     data = ref.get()
 
 if data != {}:
