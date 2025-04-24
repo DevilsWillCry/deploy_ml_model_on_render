@@ -1,0 +1,161 @@
+
+/* Animación de fade in */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(35px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animación para botones */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+
+/* Estilo general del cuerpo */
+body {
+  display: flex;
+  flex-direction: column;
+  /*Centrar div con Flex*/
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  margin: 0;
+}
+
+/* Contenedor principal */
+.container {
+  position: relative;
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 1000px;
+  height: auto;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
+  animation: fadeInUp 1.2s ease-out;
+}
+
+/* Título */
+h2 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  animation: fadeInUp 1.3s ease-out;
+}
+
+/* Cada entrada de datos */
+.entry {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  background-color: #f9f9f9;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  animation: fadeInUp 1.4s ease-out;
+}
+
+/* Inputs */
+input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+select{
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+
+/* Botón */
+button {
+  padding: 0.6rem 1.2rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+  animation: pulse 0.4s;
+}
+
+
+img{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 30px;
+  height: 30px;
+}
+
+img:hover{
+  animation: pulse 0.4s;
+  cursor: pointer
+
+}
+
+
+.container-data-esp{
+display: flex;
+width: 400px;
+flex-direction: column;
+background-color: #f9f9f9;
+padding: 1.5rem;
+margin-top: 2rem;
+border-radius: 12px;
+border: 1px solid #e0e0e0;
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+animation: fadeInUp 1.4s ease-out;
+}

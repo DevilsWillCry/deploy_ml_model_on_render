@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./src/style.css" />
+    <title>Vite App</title>
+  </head>
+  <body>
+    <div class="container">
+      <img src="./assets/arrow-left.png" alt="arrow left to back page" />
+
+      <div class="container-data-esp">
+        <h2>Tomar Mediciones del dispositivo</h2>
+        <label for="opciones-esp">Elige una opción:</label>
+        <select id="opciones-esp">
+          <option value="1">Medicion 1</option>
+          <option value="2">Medicion 2</option>
+          <option value="3">Medicion 3</option>
+        </select>
+
+        <button id="tomarBtn">Tomar Mediciones</button>
+      </div>
+
+      <div class="entry">
+        <h2>Introducir Mediciones</h2>
+        <label for="opciones">Elige una opción:</label>
+        <select id="opciones">
+          <option value="1">Medicion 1</option>
+          <option value="2">Medicion 2</option>
+          <option value="3">Medicion 3</option>
+        </select>
+        <label for="pas">PAS:</label>
+        <input type="number" id="pas" placeholder="Introduce PAS" />
+        <br />
+        <label for="pad">PAD:</label>
+        <input type="number" id="pad" placeholder="Introduce PAD" />
+        <br />
+        <button id="guardarBtn">Guardar Mediciones</button>
+      </div>
+    </div>
+  </body>
+  <script type="module" src="/src/main.js"></script>
+</html>
