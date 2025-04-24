@@ -33,15 +33,13 @@ if not firebase_admin._apps:
     initialize_app(cred, {
         'databaseURL': 'https://esp32-thesis-project-default-rtdb.firebaseio.com/'
     })
-    ref = db.reference("/sensor/data/muestra_actual")
+    ref = db.reference("/sensor/data/medicion_1")
     data = ref.get()
 
 if data != {}:
     print("✅ Datos cargados correctamente")
     for key, value in data.items():
         print(key)
-        for subkey, subvalue in value.items():
-            print(f"{subvalue}")
 
 app = FastAPI()
 
