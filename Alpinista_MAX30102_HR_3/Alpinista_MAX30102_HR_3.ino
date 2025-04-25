@@ -6,6 +6,7 @@
 #include <Firebase_ESP_Client.h>
 #include "addons/TokenHelper.h"
 #include "addons/RTDBHelper.h"
+#include "time.h" 
 
 bool signupOk = false;
 
@@ -106,12 +107,20 @@ void setup() {
     Serial.println("\nConectado exitosamente");
   }
 
-
   // Firebase
   config.api_key        = API_KEY;
   config.database_url   = DATABASE_URL;
   if (Firebase.signUp(&config, &auth, "", "")) signupOk = true;
   Firebase.begin(&config, &auth);
+
+  // 🔄 Configurar NTP para obtener hora real
+  configTime(0, 0, "pool.ntp.org");  // GMT
+  Serial.println("\nEsperando sincronización de hora...");
+  time_t now;
+  while (time(&now) < 100000) {  // Espera hasta que la hora sea válida
+    delay(1000);
+    Serial.print(".");
+  }
 
   // Sensor PPG
   if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) {
@@ -121,8 +130,29 @@ void setup() {
   particleSensor.setup(200, 1, 2, 400, 69, 16384);
 }
 
-void loop() {
+bool IsWifiActived = false;
+unsigned long countOnline = 0;
 
+void loop() {
+  if(!IsWifiActived){
+    if (WiFi.status() == WL_CONNECTED ) {
+        Serial.println("ONLINE");
+        if (!Firebase.RTDB.setBool(&fbdo, "sensor/service_on", true)) {
+            Serial.println("Error al establecer: " + fbdo.errorReason());
+        }
+        IsWifiActived = true;
+        countOnline = millis();
+
+        time_t now;
+        time(&now); 
+        if (!Firebase.RTDB.setDouble(&fbdo, "sensor/working_time_esp", now*1000 )) {
+            Serial.println("Error al establecer: " + fbdo.errorReason());
+        }
+    }
+  } else if ((millis() - countOnline) >= 10000){
+    IsWifiActived = false;
+    countOnline = 0;
+  }
   uint32_t irValue = particleSensor.getIR();
   bool dedoPresente = irValue > 5000;
 
@@ -142,14 +172,7 @@ void loop() {
   // #1: Se calcula e imprime por pantalla el HR promedio con base en el intervalo seleccionado
   t_actual = millis();
   if (t_actual - t_previo >= intervalo){
-    t_previo = t_actual;
-    if (pinPrint > 512){
-      Serial.print("...y la frecuencia cardíaca promedio, al cabo de ");
-      Serial.print(intervalo/1000);
-      Serial.print(" segundos es = ");
-      Serial.print(6*cuenta_pulsos);
-      Serial.println(" bpm.");
-    }    
+    t_previo = t_actual;   
     cuenta_pulsos = 0; 
   }
 
@@ -201,13 +224,6 @@ void loop() {
           // Actualizo tiempo de ocurrencia del mínimo
           t_min_prev = t_min_act;
           
-          // #2: Cálculo de la frecuencia cardíaca instantánea
-          if (pinPrint > 512){
-            Serial.print("La frecuencia cardíaca instantánea es = ");
-            Serial.print(float(60)/PPI_value);
-            Serial.println(" bpm.");
-          }
-          
           // Parámetros para cálculo de HR
           cuenta_pulsos++;
           ascenso_max = round(float(0.6)*0.15*1000/periodo);
@@ -236,13 +252,6 @@ void loop() {
             // Actualizo tiempo de ocurrencia del mínimo
             t_min_prev = t_min_act;
 
-            // #3: Cálculo de la frecuencia cardíaca instantánea
-            if (pinPrint > 512){
-              Serial.print("La frecuencia cardíaca instantánea es = ");
-              Serial.print(float(60)/PPI_value);
-              Serial.println(" bpm.");
-            }
-            
             cuenta_pulsos++;          
             refractory = float(0.75)*PPI_value;
             ascenso_max = round(float(0.6)*cuenta_ascenso);   //Actualizo umbral
@@ -324,7 +333,7 @@ void enviarJsonAFirebase(FirebaseData* fbdo, String nodo_actual, String nombre_v
     json.add(String(contador++), datos_vector[i]);
   }
 
-  if (!Firebase.RTDB.updateNode(fbdo, "/sensor/" + nodo_actual + "/" + nombre_variable, &json)) {
+  if (!Firebase.RTDB.updateNode(fbdo, "/sensor/data/" + nodo_actual + "/" + nombre_variable, &json)) {
     Serial.println("❌ Error al enviar '" + nombre_variable + "': " + fbdo->errorReason());
   }
 

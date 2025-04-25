@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -8,38 +8,99 @@
     <title>Vite App</title>
   </head>
   <body>
-    <div class="container">
-      <img src="./assets/arrow-left.png" alt="arrow left to back page" />
+    <main>
+      <div class="container">
+        <div class="esp-state">
+          <div class="show-state">
+            <h3 class="info-state">Estado del ESP: 🟢 ON, 🔴 OFF</h3>
+            <img
+              class="arrow-d"
+              src="./assets//arrow-down-360-svgrepo-com.svg"
+              alt="arrow down showing state of server"
+            />
+          </div>
+          <div class="esp-online"></div>
+        </div>
+        <img class="arrow-r" src="./assets/arrow-right-333-svgrepo-com.svg" alt="Arrow Right to show predictions section">
+        <div class="container-data-esp">
+          <div class="meditions-completed">
+            <div class="medition-one-completed-esp"><h3 class="medition-number">1</h3></div>
+            <div class="medition-two-completed-esp"><h3 class="medition-number">2</h3></div>
+            <div class="medition-three-completed-esp"><h3 class="medition-number">3</h3></div>
+          </div>
+          <h2>Tomar Mediciones del dispositivo</h2>
+          <label for="opciones-esp">Elige una opción:</label>
+          <select id="opciones-esp">
+            <option value="1">Medicion 1</option>
+            <option value="2">Medicion 2</option>
+            <option value="3">Medicion 3</option>
+          </select>
 
-      <div class="container-data-esp">
-        <h2>Tomar Mediciones del dispositivo</h2>
-        <label for="opciones-esp">Elige una opción:</label>
-        <select id="opciones-esp">
-          <option value="1">Medicion 1</option>
-          <option value="2">Medicion 2</option>
-          <option value="3">Medicion 3</option>
-        </select>
+          <!-- <button id="tomarBtn">Tomar Mediciones</button> -->
+          <button id="tomarBtn">Tomar Mediciones</button>
+          <div class="loader"></div>
 
-        <button id="tomarBtn">Tomar Mediciones</button>
+          <div class="oximeter-container">
+            <img
+              id="oximeter"
+              src="./assets//oximeter-img.webp"
+              alt="finger in a oximeter clip"
+            />
+          </div>
+          <div class="heart"></div>
+        </div>
+
+        <div class="entry">
+          <div class="meditions-completed">
+            <div class="medition-one-completed">
+              <h3 class="medition-number">1</h3>
+            </div>
+            <div class="medition-two-completed">
+              <h3 class="medition-number">2</h3>
+            </div>
+            <div class="medition-three-completed">
+              <h3 class="medition-number">3</h3>
+            </div>
+          </div>
+          <h2>Introducir Mediciones</h2>
+          <label for="opciones">Elige una opción:</label>
+          <select id="opciones">
+            <option value="1">Medicion 1</option>
+            <option value="2">Medicion 2</option>
+            <option value="3">Medicion 3</option>
+          </select>
+          <label for="pas">PAS:</label>
+          <input type="number" id="pas" placeholder="Introduce PAS" />
+          <br />
+          <label for="pad">PAD:</label>
+          <input type="number" id="pad" placeholder="Introduce PAD" />
+          <br />
+          <button id="guardarBtn">Guardar Mediciones</button>
+        </div>
+        <button class="start-predictions">Empezar a hacer predicciones</button>
       </div>
 
-      <div class="entry">
-        <h2>Introducir Mediciones</h2>
-        <label for="opciones">Elige una opción:</label>
-        <select id="opciones">
-          <option value="1">Medicion 1</option>
-          <option value="2">Medicion 2</option>
-          <option value="3">Medicion 3</option>
-        </select>
-        <label for="pas">PAS:</label>
-        <input type="number" id="pas" placeholder="Introduce PAS" />
-        <br />
-        <label for="pad">PAD:</label>
-        <input type="number" id="pad" placeholder="Introduce PAD" />
-        <br />
-        <button id="guardarBtn">Guardar Mediciones</button>
+      <div class="container-predictions">
+        <img id="arrow-l" src="./assets/arrow-left.png" alt="Volver" />
+      
+        <div class="prediction-content">
+          <h2>Resultado de la Predicción</h2>
+      
+          <div class="prediction-box">
+            <p class="prediction-label">Presión Arterial Sistólica Estimada:</p>
+            <span class="prediction-value">118 mmHg</span>
+          </div>
+      
+          <div class="prediction-box">
+            <p class="prediction-label">Presión Arterial Diastólica Estimada:</p>
+            <span class="prediction-value">75 mmHg</span>
+          </div>
+      
+          <p class="confidence">Nivel de confianza del modelo: <strong>92%</strong></p>
+        </div>
       </div>
-    </div>
+      
+    </main>
   </body>
   <script type="module" src="/src/main.js"></script>
 </html>
