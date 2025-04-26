@@ -127,7 +127,7 @@ function verificarEstado() {
   const ahora = Date.now();
   const diferencia = ahora - ultimoTimestamp;
 
-  if (diferencia <= 20000) {
+  if (diferencia <= 10000) {
     console.log("🟢 En línea");
     document.querySelector(".esp-online").classList.remove("offline");
   } else {
@@ -286,7 +286,7 @@ document.querySelector(".start-predictions").addEventListener("click", function 
           count++;
         }
       }
-      if(count == 1){
+      if(count == 6){
         Swal.fire({
           title: "¿Estás seguro?",
           text: "Se enviarán las mediciones para tomar predicciones.",

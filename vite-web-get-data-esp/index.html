@@ -5,28 +5,45 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./src/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:ital,wght@0,200..800;1,200..800&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap"
+      rel="stylesheet"
+    />
     <title>Vite App</title>
   </head>
   <body>
     <main>
+      <header>
+        <h1>Sistema de Mediciones Médicas.</h1>
+        <p>
+          Bienvenido al sistema de mediciones. Por favor, siga los pasos a continuación para tomar y registrar sus mediciones.
+        </p>
+      </header>
       <div class="container">
         <div class="esp-state">
           <div class="show-state">
-            <h3 class="info-state">Estado del ESP: 🟢 ON, 🔴 OFF</h3>
-            <img
-              class="arrow-d"
-              src="./assets//arrow-down-360-svgrepo-com.svg"
-              alt="arrow down showing state of server"
-            />
+            <h3 class="info-state">Estado del ESP:</h3>
+            <div class="esp-online"></div>
           </div>
-          <div class="esp-online"></div>
         </div>
-        <img class="arrow-r" src="./assets/arrow-right-333-svgrepo-com.svg" alt="Arrow Right to show predictions section">
+        <img
+          class="arrow-r"
+          src="./assets/arrow-right-333-svgrepo-com.svg"
+          alt="Arrow Right to show predictions section"
+        />
         <div class="container-data-esp">
           <div class="meditions-completed">
-            <div class="medition-one-completed-esp"><h3 class="medition-number">1</h3></div>
-            <div class="medition-two-completed-esp"><h3 class="medition-number">2</h3></div>
-            <div class="medition-three-completed-esp"><h3 class="medition-number">3</h3></div>
+            <div class="medition-one-completed-esp">
+              <h3 class="medition-number">1</h3>
+            </div>
+            <div class="medition-two-completed-esp">
+              <h3 class="medition-number">2</h3>
+            </div>
+            <div class="medition-three-completed-esp">
+              <h3 class="medition-number">3</h3>
+            </div>
           </div>
           <h2>Tomar Mediciones del dispositivo</h2>
           <label for="opciones-esp">Elige una opción:</label>
@@ -82,24 +99,30 @@
 
       <div class="container-predictions">
         <img id="arrow-l" src="./assets/arrow-left.png" alt="Volver" />
-      
+
         <div class="prediction-content">
           <h2>Resultado de la Predicción</h2>
-      
+
           <div class="prediction-box">
             <p class="prediction-label">Presión Arterial Sistólica Estimada:</p>
             <span class="prediction-value">118 mmHg</span>
           </div>
-      
+
           <div class="prediction-box">
-            <p class="prediction-label">Presión Arterial Diastólica Estimada:</p>
+            <p class="prediction-label">
+              Presión Arterial Diastólica Estimada:
+            </p>
             <span class="prediction-value">75 mmHg</span>
           </div>
-      
-          <p class="confidence">Nivel de confianza del modelo: <strong>92%</strong></p>
+
+          <p class="confidence">
+            Nivel de confianza del modelo: <strong>92%</strong>
+          </p>
         </div>
       </div>
-      
+      <footer>
+        © 2025 Sistema de Mediciones Médicas. Todos los derechos reservados.
+      </footer>
     </main>
   </body>
   <script type="module" src="/src/main.js"></script>
