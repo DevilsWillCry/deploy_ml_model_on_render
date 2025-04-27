@@ -1,2 +1,4 @@
 credentials-esp32.json
 secrets.h
+env
+.env 

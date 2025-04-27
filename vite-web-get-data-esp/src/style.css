@@ -336,7 +336,7 @@ animation: fadeInUp 1.4s ease-out;
   padding-left: 10px;
   position: absolute;
   top: 0px;
-  right: -15px;
+  right: 0px;
 }
 
 .info-state{
