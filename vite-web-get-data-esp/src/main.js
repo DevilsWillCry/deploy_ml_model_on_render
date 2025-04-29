@@ -143,6 +143,26 @@ onValue(refOnline, (snapshot) => {
   }
 });
 
+//Vamos hacer un fecth a http://127.0.0.1:8000/predict
+
+/*
+const url = "http://127.0.0.1:8000/predict";
+
+async function fetchPredictions() {
+  const response = await fetch(url);
+  const data = await response.json();
+  print(data);
+  return data;
+}
+
+const predictions = await fetchPredictions();
+
+setInterval(fetchPredictions, 5000);
+
+*/
+
+
+
 setInterval(verificarEstado, 3000);
 
 const refCheckEndMedition = ref(db, "sensor/tomar_medicion");
@@ -286,7 +306,7 @@ document.querySelector(".start-predictions").addEventListener("click", function 
           count++;
         }
       }
-      if(count == 6){
+      if(count == 1){
         Swal.fire({
           title: "¿Estás seguro?",
           text: "Se enviarán las mediciones para tomar predicciones.",

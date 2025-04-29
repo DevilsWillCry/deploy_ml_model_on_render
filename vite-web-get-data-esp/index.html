@@ -11,12 +11,13 @@
       href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:ital,wght@0,200..800;1,200..800&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap"
       rel="stylesheet"
     />
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:ital,wght@0,200..800;1,200..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap" rel="stylesheet">
     <title>Vite App</title>
   </head>
   <body>
     <main>
       <header>
-        <h1>Sistema de Mediciones Médicas.</h1>
+        <h1>Sistema de Mediciones Médicas</h1>
         <p>
           Bienvenido al sistema de mediciones. Por favor, siga los pasos a continuación para tomar y registrar sus mediciones.
         </p>
@@ -45,7 +46,11 @@
               <h3 class="medition-number">3</h3>
             </div>
           </div>
-          <h2>Tomar Mediciones del dispositivo</h2>
+          <div class="take-meditions-title">
+            <div class="number-title">1</div>
+            <img src="./assets/wave-pulse-svgrepo-com.min.svg" alt="wave pulse icon">
+            <h2>Tomar Mediciones del dispositivo</h2>
+          </div>
           <label for="opciones-esp">Elige una opción:</label>
           <select id="opciones-esp">
             <option value="1">Medicion 1</option>
@@ -55,7 +60,7 @@
 
           <!-- <button id="tomarBtn">Tomar Mediciones</button> -->
           <button id="tomarBtn">Tomar Mediciones</button>
-          <div class="loader"></div>
+          <span class="loader"></span>
 
           <div class="oximeter-container">
             <img
@@ -79,7 +84,11 @@
               <h3 class="medition-number">3</h3>
             </div>
           </div>
-          <h2>Introducir Mediciones</h2>
+          <div class="take-meditions-title">  
+            <div class="number-title">2</div>
+            <img src="./assets/document-add-svgrepo-com.min.svg" alt="wave pulse icon">
+            <h2>Introducir Mediciones</h2>
+          </div>
           <label for="opciones">Elige una opción:</label>
           <select id="opciones">
             <option value="1">Medicion 1</option>

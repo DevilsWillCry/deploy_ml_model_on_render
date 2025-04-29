@@ -51,6 +51,11 @@ int countPico_A_Pico = 0;
 int countMin_A_Min = 0;
 int countArea_Pulso = 0;
 
+unsigned long lastUpdateTime = 0;
+const unsigned long updateInterval = 5000; 
+
+bool ReadyToPredict = false;
+
 MAX30105 particleSensor;
 
 Preferences prefs;
@@ -264,7 +269,8 @@ void loop() {
   }
 
   // #4: Se comenta si se habilitan partes 1, 2 y 3
-  if(dedoPresente && !tomandoDatos){
+  if(dedoPresente && !tomandoDatos && !ReadyToPredict){
+     ReadyToPredict = true; // Variable de prueba, eliminar después
      if (Firebase.ready() && signupOk) {
         if(Firebase.RTDB.getBool(&fbdo, "sensor/tomar_medicion")){
           if (fbdo.boolData() && !tomandoDatos){
@@ -303,13 +309,63 @@ void loop() {
         } 
       }
 
-      if(datos.size() >= 50 || amp_pulso_data.size() >= 50 || t_cresta_data.size() >= 50 || t_descnd_data.size() >= 50 || pico_a_pico_data.size() >= 50 || min_a_min_data.size() >= 50 || area_pulso_data.size() >= 50){
+      if(datos.size() >= 100 || amp_pulso_data.size() >= 100 || t_cresta_data.size() >= 100 || t_descnd_data.size() >= 100 || pico_a_pico_data.size() >= 100 || min_a_min_data.size() >= 100 || area_pulso_data.size() >= 100){
         enviarLote();
       }
 
-    }
+    } else if(ReadyToPredict && !tomandoDatos && dedoPresente){
+      Serial.print("Listo para predecir: ");
+      Serial.print(ReadyToPredict);
+      Serial.print(", ");
+      Serial.print("Tomando Datos: ");
+      Serial.println(tomandoDatos);
+
+      unsigned long currentMillis = millis();
+      if(currentMillis - lastUpdateTime >= updateInterval){
+          lastUpdateTime = currentMillis;
+
+          FirebaseJson json_prediction;
+          json_prediction.add("amp_pulso", amp_pulso);
+          json_prediction.add("area_pulso", area_pulso);
+          json_prediction.add("t_cresta", t_cresta);
+          json_prediction.add("t_descnd", t_descnd);
+          json_prediction.add("pico_a_pico", pico_a_pico);
+          json_prediction.add("min_a_min", min_a_min);
+          json_prediction.add("value_max", value_max);
+          json_prediction.add("timestamp", currentMillis);
+
+          if (!Firebase.RTDB.setJSON(&fbdo, "sensor/data_to_predict", &json_prediction)) {
+          Serial.println("Error al establecer: " + fbdo.errorReason());
+          } else {
+          Serial.println("Datos enviados a Firebase");
+          } 
+
+          if(Firebase.RTDB.getBool(&fbdo, "sensor/tomar_medicion")){
+            if (fbdo.boolData()){
+              ReadyToPredict = false;
+            }
+          }
+      }
+     }
+    /*
+    if(ReadyToPredict && !tomandoDatos && dedoPresente){
+        Serial.print(amp_pulso);
+        Serial.print(",");
+        Serial.print(t_cresta);
+        Serial.print(",");
+        Serial.print(t_descnd);
+        Serial.print(",");
+        Serial.print(pico_a_pico);
+        Serial.print(",");
+        Serial.print(min_a_min);
+        Serial.print(",");
+        Serial.println(area_pulso);
+        Serial.print(",");
+        Serial.println(value_max);
+      }
+    */
+
   } 
-    
   // Se regula la tasa de muestreo porque la señal sale bastante ruidosa
   t_muestreo(periodo);
 
@@ -332,17 +388,21 @@ void enviarJsonAFirebase(FirebaseData* fbdo, String nodo_actual, String nombre_v
   for (size_t i = 0; i < datos_vector.size(); i++) {
     json.add(String(contador++), datos_vector[i]);
   }
+  
 
   if (!Firebase.RTDB.updateNode(fbdo, "/sensor/data/" + nodo_actual + "/" + nombre_variable, &json)) {
     Serial.println("❌ Error al enviar '" + nombre_variable + "': " + fbdo->errorReason());
   }
-
+ 
   datos_vector.clear();
 }
 
 
 void enviarLote() {
   String nodo_actual = obtenerRutaMedicion();
+  if (nodo_actual == "medicion_1"){
+    ReadyToPredict = true;
+  }
   if (nodo_actual == "") {
     Serial.println("❌ Error obteniendo nodo actual. Cancelando envío.");
     return;
@@ -355,6 +415,7 @@ void enviarLote() {
   enviarJsonAFirebase(&fbdo, nodo_actual, "pico_a_pico", pico_a_pico_data, countPico_A_Pico);
   enviarJsonAFirebase(&fbdo, nodo_actual, "min_a_min", min_a_min_data, countMin_A_Min);
   enviarJsonAFirebase(&fbdo, nodo_actual, "area_pulso", area_pulso_data, countArea_Pulso);
+  
 }
 
 
