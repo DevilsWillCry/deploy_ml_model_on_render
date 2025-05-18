@@ -7,12 +7,13 @@
 #include "addons/TokenHelper.h"
 #include "addons/RTDBHelper.h"
 #include "time.h" 
+#include "secrets.h"
 
 bool signupOk = false;
 
 // Configuración Firebase
-#define API_KEY "AIzaSyAYM09lYHkW8Otq1CC8AD3DRi0G2UqyZr0"
-#define DATABASE_URL "https://esp32-thesis-project-default-rtdb.firebaseio.com/"
+#define API_KEY KEY
+#define DATABASE_URL URL
 
 // Instancia de Firebase
 FirebaseData fbdo;
@@ -43,6 +44,7 @@ std::vector<float> t_descnd_data;
 std::vector<float> pico_a_pico_data;
 std::vector<float> min_a_min_data;
 std::vector<float> area_pulso_data;
+
 int countGlobal = 0;
 int countAmp_Pulso = 0;
 int countT_Cresta = 0;
@@ -55,6 +57,7 @@ unsigned long lastUpdateTime = 0;
 const unsigned long updateInterval = 5000; 
 
 bool ReadyToPredict = false;
+
 
 MAX30105 particleSensor;
 
@@ -224,7 +227,9 @@ void loop() {
           min_a_min = (t_min_act - t_min_prev)/float(1000); 
           t_cresta_n = float(t_cresta)/min_a_min; 
           t_descnd_n = float(t_descnd)/min_a_min; 
-          area_pulso = float(amp_pulso)/min_a_min; 
+          area_pulso = float(amp_pulso)/min_a_min;
+
+          // Dividir amp_pulso/t_cresta = pendiente_ascenso 
 
           // Actualizo tiempo de ocurrencia del mínimo
           t_min_prev = t_min_act;
@@ -269,8 +274,9 @@ void loop() {
   }
 
   // #4: Se comenta si se habilitan partes 1, 2 y 3
+  // Cambiar !ReadyToPredict negado.
   if(dedoPresente && !tomandoDatos && !ReadyToPredict){
-     ReadyToPredict = true; // Variable de prueba, eliminar después
+     // Variable de prueba, eliminar después ReadyToPredict = true;
      if (Firebase.ready() && signupOk) {
         if(Firebase.RTDB.getBool(&fbdo, "sensor/tomar_medicion")){
           if (fbdo.boolData() && !tomandoDatos){
@@ -282,20 +288,44 @@ void loop() {
       }
   }
   if (pinPrint <= 512 ){
+    /*
+    Serial.print(muestra_actual);
+    Serial.print(",");
+    Serial.print(value_max);
+    Serial.print(",");
+    Serial.println(value_min);
+    Serial.print(amp_pulso);
+    Serial.print(",");
+    Serial.print(amp_pulso_n);
+    Serial.print(",");
+    Serial.print(t_cresta);
+    Serial.print(",");
+    Serial.print(t_cresta_n);
+    Serial.print(",");
+    Serial.print(t_descnd);
+    Serial.print(",");
+    Serial.print(t_descnd_n);
+    Serial.print(",");
+    Serial.print(pico_a_pico);
+    Serial.print(",");
+    Serial.print(min_a_min);
+    Serial.print(",");
+    Serial.println(area_pulso);
+    */
     if (tomandoDatos){
-      if(value_max != 0 && amp_pulso != 0){
-        datos.push_back(value_max);
-        amp_pulso_data.push_back(amp_pulso);
-        t_cresta_data.push_back(t_cresta);
-        t_descnd_data.push_back(t_descnd);
-        pico_a_pico_data.push_back(pico_a_pico);
-        min_a_min_data.push_back(min_a_min);
-        area_pulso_data.push_back(area_pulso);
-      }
+      datos.push_back(value_max);
+      amp_pulso_data.push_back(amp_pulso);
+      t_cresta_data.push_back(t_cresta);
+      t_descnd_data.push_back(t_descnd);
+      pico_a_pico_data.push_back(pico_a_pico);
+      min_a_min_data.push_back(min_a_min);
+      area_pulso_data.push_back(area_pulso);
 
       if (millis() - tiempoInicio >= 30000){
         Serial.println("Tiempo Completado.");
         tomandoDatos = false;
+        /*
+        */
         countGlobal = 0;
         countAmp_Pulso = 0;
         countT_Cresta = 0;
@@ -332,7 +362,6 @@ void loop() {
           json_prediction.add("pico_a_pico", pico_a_pico);
           json_prediction.add("min_a_min", min_a_min);
           json_prediction.add("value_max", value_max);
-          json_prediction.add("timestamp", currentMillis);
 
           if (!Firebase.RTDB.setJSON(&fbdo, "sensor/data_to_predict", &json_prediction)) {
           Serial.println("Error al establecer: " + fbdo.errorReason());
@@ -400,7 +429,7 @@ void enviarJsonAFirebase(FirebaseData* fbdo, String nodo_actual, String nombre_v
 
 void enviarLote() {
   String nodo_actual = obtenerRutaMedicion();
-  if (nodo_actual == "medicion_1"){
+  if (nodo_actual == "medicion_3"){
     ReadyToPredict = true;
   }
   if (nodo_actual == "") {
@@ -408,8 +437,8 @@ void enviarLote() {
     return;
   }
 
-  enviarJsonAFirebase(&fbdo, nodo_actual, "value_max", datos, countGlobal);
   enviarJsonAFirebase(&fbdo, nodo_actual, "amp_pulso", amp_pulso_data, countAmp_Pulso);
+  enviarJsonAFirebase(&fbdo, nodo_actual, "value_max", datos, countGlobal);
   enviarJsonAFirebase(&fbdo, nodo_actual, "t_cresta", t_cresta_data, countT_Cresta);
   enviarJsonAFirebase(&fbdo, nodo_actual, "t_descnd", t_descnd_data, countT_descnd);
   enviarJsonAFirebase(&fbdo, nodo_actual, "pico_a_pico", pico_a_pico_data, countPico_A_Pico);
@@ -419,12 +448,16 @@ void enviarLote() {
 }
 
 
-void t_muestreo(uint32_t periodo_us) {
-  static uint32_t t_ultima_muestra = micros();
-  while ((micros() - t_ultima_muestra) < periodo_us) {
-    // Espera sin bloquear totalmente
-    delayMicroseconds(10);
-  }
-  t_ultima_muestra = micros();
+void t_muestreo(uint32_t t_muestreo)
+{
+  uint32_t micros_now = (uint16_t)micros();
+ 
+  while (t_muestreo > 0) {
+    if (((uint16_t)micros() - micros_now) >= 1000) {
+      t_muestreo--;
+      micros_now += 1000;
+    }
+  }  
 }
+
 

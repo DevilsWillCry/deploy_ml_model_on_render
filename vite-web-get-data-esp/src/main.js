@@ -35,7 +35,6 @@ let checkingAllData = {
   "medition-one-esp" : false,
   "medition-two-esp" : false,
   "medition-three-esp" : false
-
 };
 
 // Función para guardar las mediciones
@@ -49,7 +48,7 @@ function guardar() {
       "Error",
       "Por favor, ingresa ambos valores (PAS y PAD).",
       "error"
-    ); // Opcional
+    );
     return;
   }
   if(opcionSeleccionada == 1){
@@ -127,7 +126,7 @@ function verificarEstado() {
   const ahora = Date.now();
   const diferencia = ahora - ultimoTimestamp;
 
-  if (diferencia <= 10000) {
+  if (diferencia <= 15000) {
     console.log("🟢 En línea");
     document.querySelector(".esp-online").classList.remove("offline");
   } else {
@@ -143,23 +142,32 @@ onValue(refOnline, (snapshot) => {
   }
 });
 
+let countFirstPrediction = 0;
+
 //Vamos hacer un fecth a http://127.0.0.1:8000/predict
 
-/*
-const url = "http://127.0.0.1:8000/predict";
+//Vamos a hacer predicciones cada que se actualice firebase sensor/data_to_predict
+onValue(ref(db, "sensor/data_to_predict"), (_) => {
+  if(countFirstPrediction <= 2){
+    countFirstPrediction++;
+    return;
+  }
 
-async function fetchPredictions() {
-  const response = await fetch(url);
-  const data = await response.json();
-  print(data);
-  return data;
-}
+  const url = "http://127.0.0.1:8000/predict";
+  if(countFirstPrediction >= 2){
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data.prediction[0] + ", " + data.prediction[1]);
+        document.querySelector(".prediction-pas-value").textContent = data.prediction[0].toFixed(2) + " " + " mmHg";
+        document.querySelector(".prediction-pad-value").textContent = data.prediction[1].toFixed(2) + " " + " mmHg";
+      })
+      .catch((error) => {
+        console.error("Error al hacer la petición:", error);
+      });
+  }
+});
 
-const predictions = await fetchPredictions();
-
-setInterval(fetchPredictions, 5000);
-
-*/
 
 
 
@@ -299,14 +307,15 @@ document.getElementById("opciones-esp").addEventListener("change", function () {
 });
 
 // Evento para start-predictions
+let count = 0;
 document.querySelector(".start-predictions").addEventListener("click", function () {
-      let count = 0;
       for (let key in checkingAllData) {
         if (checkingAllData[key]) {
           count++;
         }
       }
-      if(count == 1){
+      if(count >= 1){
+        count = 0;
         Swal.fire({
           title: "¿Estás seguro?",
           text: "Se enviarán las mediciones para tomar predicciones.",
