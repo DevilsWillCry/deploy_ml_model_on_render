@@ -48,7 +48,15 @@ value_max = []
 pas = []
 pad = []
 
-# Configurar Cloudinary
+
+IS_RENDER = os.path.exists("/etc/secrets/credentials_cloudinary")
+# Cargar variables desde el archivo correspondiente
+if IS_RENDER:
+    load_dotenv("/etc/secrets/credentials_cloudinary")
+else:
+    load_dotenv()  # Carga .env local
+
+# Configurar Cloudinary (esto va para ambos casos)
 cloudinary.config(
     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
     api_key=os.getenv("CLOUDINARY_API_KEY"),
@@ -99,7 +107,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-IS_RENDER = os.path.exists("/etc/secrets/credentials_cloudinary")
 
 @app.get("/")
 def read_root():
@@ -346,10 +353,6 @@ def metrics():
 
 @app.get("/show-graphs")
 def show_graphs():
-    if IS_RENDER:
-        load_dotenv("/etc/secrets/credentials_cloudinary")
-    else:
-        load_dotenv()
     upload_pas = cloudinary.uploader.upload("dispersion_prueba_pas.png")
     upload_pad = cloudinary.uploader.upload("dispersion_prueba_pad.png")
 

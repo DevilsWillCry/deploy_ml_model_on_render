@@ -476,15 +476,32 @@ arrowRight.addEventListener("click", () => {
 const avancedOptionesButton = document.querySelector(".advanced-options");
 
 avancedOptionesButton?.addEventListener("click", () => {
+  document.querySelector(".advanced-options").style.display = "none";
+  document.querySelector(".loader-images").style.display = "block";
+  document.querySelector(".prediction-graph").querySelectorAll("img").forEach(img => {
+    img.remove();
+  })
   const url = isProduction == "production" ?
     "https://deploy-ml-model-on-render.onrender.com/show-graphs" : "http://127.0.0.1:8000/show-graphs";
   fetch(url)
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
-      // Insert graph png into img tags to pas and pad in prediction-graph
-      document.querySelector(".pas-graph").src = data.pas;
-      document.querySelector(".pad-graph").src = data.pad;
+
+      document.querySelector(".prediction-graph").classList.add("visible-prediction-graph");
+      // Insert img tag into the DOM
+      const img = document.createElement("img");
+      img.src = data.pas;
+      img.classList.add("pas-graph");
+      document.querySelector(".prediction-graph").appendChild(img);
+
+      const img2 = document.createElement("img");
+      img2.src = data.pad;
+      img2.classList.add("pad-graph");
+      document.querySelector(".prediction-graph").appendChild(img2);
+
+
+      document.querySelector(".loader-images").style.display = "none";
     })
     .catch((error) => {
       //Use SweetAlert 2
@@ -499,7 +516,13 @@ avancedOptionesButton?.addEventListener("click", () => {
 });
 
 
+const closeGraphsButton = document.querySelector(".close-graphs-button");
 
+closeGraphsButton?.addEventListener("click", () => {
+  document.querySelector(".prediction-graph").classList.remove("visible-prediction-graph");
+  document.querySelector(".advanced-options").style.display = "block";
+  document.querySelector(".loader-images").style.display = "none";
+});
 
 onValue(ref(db, "sensor/start_predictions"), (snapshot) => {
   if (snapshot.val() && isTrainingModel) {
