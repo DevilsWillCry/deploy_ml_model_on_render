@@ -10,6 +10,7 @@ import {
   get,
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
+
 import Swal from "sweetalert2";
 
 export const firebaseConfig = {

@@ -323,3 +323,28 @@ def predict():
     # return {"prediction": [float(prediction[0][0]), float(prediction[0][1])] }
 
     return {"prediction": [float(prediction_pas), float(prediction_pad)]}
+
+
+@app.get("/metrics")
+def metrics():
+    #Show Metrics open a JSONFile called metrics_pas.json and metrics_pad.json
+    with open('metrics_pas.json', 'r') as f:
+        metrics_pas = json.load(f)
+
+    with open('metrics_pad.json', 'r') as f:
+        metrics_pad = json.load(f)
+
+    promedio = ((metrics_pas["R2"] + metrics_pad["R2"]) / 2) * 100
+
+    print(promedio)
+
+    return {"result": promedio}
+
+
+@app.get("/show-graphs")
+def show_graphs():
+    
+    return {"graph_pas": "./dispersion_pas.png", "graph_pad": "./dispersion_prueba_pad.png"}
+    
+    
+    
