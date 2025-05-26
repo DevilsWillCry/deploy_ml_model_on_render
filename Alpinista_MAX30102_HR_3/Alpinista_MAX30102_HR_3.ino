@@ -62,7 +62,7 @@ int countMin_A_Min = 0;
 int countArea_Pulso = 0;
 
 unsigned long lastUpdateTime = 0;
-const unsigned long updateInterval = 5000; 
+const unsigned long updateInterval = 10000; 
 
 bool ReadyToPredict = false;
 
@@ -218,7 +218,7 @@ void setup() {
   particleSensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange);
 
   // Crea la tarea que enviará a Firebase cada 10 segundos
-  xTaskCreate(enviarFirebaseTask, "EnviarFirebaseTask", 8192, NULL, 1, NULL);
+  // xTaskCreate(enviarFirebaseTask, "EnviarFirebaseTask", 8192, NULL, 1, NULL);
 }
 
 bool IsWifiActived = false;

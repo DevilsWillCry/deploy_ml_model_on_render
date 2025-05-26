@@ -24,7 +24,7 @@ export const firebaseConfig = {
 
 const isProduction = import.meta.env.VITE_NODE_ENV;
 
-console.log(isProduction)
+console.log(isProduction);
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
@@ -169,8 +169,10 @@ onValue(ref(db, "sensor/data_to_predict"), (_) => {
     return;
   }
 
-  const url = isProduction == "production" ?
-  "https://deploy-ml-model-on-render.onrender.com/predict" : "http://127.0.0.1:8000/predict";
+  const url =
+    isProduction == "production"
+      ? "https://deploy-ml-model-on-render.onrender.com/predict"
+      : "http://127.0.0.1:8000/predict";
   if (countFirstPrediction >= 2) {
     fetch(url)
       .then((response) => response.json())
@@ -414,15 +416,6 @@ const containerPredictions = document.querySelector(".container-predictions");
 const arrowLeft = document.querySelector("#arrow-l");
 const arrowRight = document.querySelector(".arrow-r");
 
-// Funciones auxiliares
-function mostrar(contenedor) {
-  contenedor.classList.add("visible");
-}
-
-function ocultar(contenedor) {
-  contenedor.classList.remove("visible");
-}
-
 // Al terminar la animación de salida de container
 container.addEventListener("animationend", () => {
   if (container.classList.contains("next-page")) {
@@ -478,28 +471,68 @@ const avancedOptionesButton = document.querySelector(".advanced-options");
 avancedOptionesButton?.addEventListener("click", () => {
   document.querySelector(".advanced-options").style.display = "none";
   document.querySelector(".loader-images").style.display = "block";
-  document.querySelector(".prediction-graph").querySelectorAll("img").forEach(img => {
-    img.remove();
-  })
-  const url = isProduction == "production" ?
-    "https://deploy-ml-model-on-render.onrender.com/show-graphs" : "http://127.0.0.1:8000/show-graphs";
+  document
+    .querySelector(".prediction-graph")
+    .querySelectorAll("img")
+    .forEach((img) => {
+      img.remove();
+    });
+  const url =
+    isProduction == "production"
+      ? "https://deploy-ml-model-on-render.onrender.com/show-graphs"
+      : "http://127.0.0.1:8000/show-graphs";
   fetch(url)
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
 
-      document.querySelector(".prediction-graph").classList.add("visible-prediction-graph");
+      document
+        .querySelector(".prediction-graph")
+        .classList.add("visible-prediction-graph");
       // Insert img tag into the DOM
       const img = document.createElement("img");
       img.src = data.pas;
       img.classList.add("pas-graph");
       document.querySelector(".prediction-graph").appendChild(img);
+      // Optional ?
+      img.addEventListener("click", () => {
+        // get src from img tag
+        const src = img.src;
+
+        Swal.fire({
+          title: "Graph PAS",
+          text: "Relación entre PAS Real y PAS Predicho",
+          imageUrl: src,
+          imageAlt: "Graph PAS",
+          customClass: {
+            popup: "my-swal-popup",
+            content: "my-swal-content",
+            image: "my-swal-image",
+          },
+        });
+      });
 
       const img2 = document.createElement("img");
       img2.src = data.pad;
       img2.classList.add("pad-graph");
       document.querySelector(".prediction-graph").appendChild(img2);
 
+      img2.addEventListener("click", () => {
+        // get src from img tag
+        const src = img2.src;
+
+        Swal.fire({
+          title: "Graph PAD",
+          text: "Relación entre PAD Real y PAD Predicho",
+          imageUrl: src,
+          imageAlt: "Graph PAD",
+          customClass: {
+            popup: "my-swal-popup",
+            content: "my-swal-content",
+            image: "my-swal-image",
+          },
+        });
+      });
 
       document.querySelector(".loader-images").style.display = "none";
     })
@@ -515,11 +548,12 @@ avancedOptionesButton?.addEventListener("click", () => {
     });
 });
 
-
 const closeGraphsButton = document.querySelector(".close-graphs-button");
 
 closeGraphsButton?.addEventListener("click", () => {
-  document.querySelector(".prediction-graph").classList.remove("visible-prediction-graph");
+  document
+    .querySelector(".prediction-graph")
+    .classList.remove("visible-prediction-graph");
   document.querySelector(".advanced-options").style.display = "block";
   document.querySelector(".loader-images").style.display = "none";
 });
@@ -529,8 +563,10 @@ onValue(ref(db, "sensor/start_predictions"), (snapshot) => {
     document.querySelector(".prediction-content").style.display = "none";
     document.querySelector(".loader-prediction").style.display = "block";
     setTimeout(() => {
-      const url = isProduction == "production" ?
-        "https://deploy-ml-model-on-render.onrender.com/training_model" : "http://127.0.0.1:8000/training_model";
+      const url =
+        isProduction == "production"
+          ? "https://deploy-ml-model-on-render.onrender.com/training_model"
+          : "http://127.0.0.1:8000/training_model";
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
@@ -555,13 +591,16 @@ onValue(ref(db, "sensor/model_is_trained"), (snapshot) => {
     document.querySelector(".prediction-content").style.display = "flex";
     document.querySelector(".loader-prediction").style.display = "none";
     isTrainingModel = false;
-    const urlMetrics = isProduction == "production" ?
-      "https://deploy-ml-model-on-render.onrender.com/metrics" : "http://127.0.0.1:8000/metrics";
+    const urlMetrics =
+      isProduction == "production"
+        ? "https://deploy-ml-model-on-render.onrender.com/metrics"
+        : "http://127.0.0.1:8000/metrics";
     fetch(urlMetrics)
       .then((response) => response.json())
       .then((data) => {
         console.log(data.result);
-        document.querySelector(".confidence").textContent = "Nivel de confianza del modelo: " + data.result.toFixed(2) + "%";
+        document.querySelector(".confidence").textContent =
+          "Nivel de confianza del modelo: " + data.result.toFixed(2) + "%";
       })
       .catch((error) => {
         //Use SweetAlert 2

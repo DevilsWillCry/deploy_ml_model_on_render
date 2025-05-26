@@ -23,6 +23,8 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
 
+import matplotlib
+matplotlib.use('Agg') 
 import matplotlib.pyplot as plt
 
 import joblib
