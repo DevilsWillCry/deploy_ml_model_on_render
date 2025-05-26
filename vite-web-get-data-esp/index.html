@@ -11,7 +11,10 @@
       href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:ital,wght@0,200..800;1,200..800&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap"
       rel="stylesheet"
     />
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:ital,wght@0,200..800;1,200..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:ital,wght@0,200..800;1,200..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap"
+      rel="stylesheet"
+    />
     <title>Vite App</title>
   </head>
   <body>
@@ -19,7 +22,8 @@
       <header>
         <h1>Sistema de Mediciones Médicas</h1>
         <p>
-          Bienvenido al sistema de mediciones. Por favor, siga los pasos a continuación para tomar y registrar sus mediciones.
+          Bienvenido al sistema de mediciones. Por favor, siga los pasos a
+          continuación para tomar y registrar sus mediciones.
         </p>
       </header>
       <div class="container">
@@ -45,22 +49,37 @@
             <div class="medition-three-completed-esp">
               <h3 class="medition-number">3</h3>
             </div>
+            <div class="medition-four-completed-esp">
+              <h3 class="medition-number">4</h3>
+            </div>
+            <div class="medition-five-completed-esp">
+              <h3 class="medition-number">5</h3>
+            </div>
           </div>
           <div class="take-meditions-title">
             <div class="number-title">1</div>
-            <img src="./assets/wave-pulse-svgrepo-com.min.svg" alt="wave pulse icon">
+            <img
+              src="./assets/wave-pulse-svgrepo-com.min.svg"
+              alt="wave pulse icon"
+            />
             <h2>Tomar Mediciones del dispositivo</h2>
           </div>
           <label for="opciones-esp">Elige una opción:</label>
           <select id="opciones-esp">
             <option value="1">Reposo</option>
-            <option value="2">Recuperación Inmediata (Al momento de terminar el ejercicio)</option>
-            <option value="3">Recuperación Tardía (Después de 2 minutos)</option>
+            <option value="2">
+              Recuperación inmediata (al terminar el ejercicio)
+            </option>
+            <option value="3">Recuperación tardía (2 minutos después)</option>
+            <option value="4">Ejercicio de relajación (técnica 4-6-8)</option>
+            <option value="5">Segunda recuperación inmediata</option>
           </select>
 
           <!-- <button id="tomarBtn">Tomar Mediciones</button> -->
-          <button id="tomarBtn">Tomar Mediciones</button>
-          <span class="loader"></span>
+           <div class="loader-button-container">
+              <button id="tomarBtn">Tomar Mediciones</button>
+              <span class="loader"></span>
+           </div>
 
           <div class="oximeter-container">
             <img
@@ -83,17 +102,30 @@
             <div class="medition-three-completed">
               <h3 class="medition-number">3</h3>
             </div>
+            <div class="medition-four-completed">
+              <h3 class="medition-number">4</h3>
+            </div>
+            <div class="medition-five-completed">
+              <h3 class="medition-number">5</h3>
+            </div>
           </div>
-          <div class="take-meditions-title">  
+          <div class="take-meditions-title">
             <div class="number-title">2</div>
-            <img src="./assets/document-add-svgrepo-com.min.svg" alt="wave pulse icon">
+            <img
+              src="./assets/document-add-svgrepo-com.min.svg"
+              alt="wave pulse icon"
+            />
             <h2>Introducir Mediciones</h2>
           </div>
           <label for="opciones">Elige una opción:</label>
           <select id="opciones">
             <option value="1">Reposo</option>
-            <option value="2">Recuperación Inmediata (Al terminar el ejercicio)</option>
-            <option value="3">Recuperación Tardía (Después de 2 minutos)</option>
+            <option value="2">
+              Recuperación inmediata (al terminar el ejercicio)
+            </option>
+            <option value="3">Recuperación tardía (2 minutos después)</option>
+            <option value="4">Ejercicio de relajación (técnica 4-6-8)</option>
+            <option value="5">Segunda recuperación inmediata</option>
           </select>
           <label for="pas">PAS:</label>
           <input type="number" id="pas" placeholder="Introduce PAS" />
@@ -108,10 +140,11 @@
 
       <div class="container-predictions">
         <img id="arrow-l" src="./assets/arrow-left.png" alt="Volver" />
-
-        <div class="prediction-content">
+        <div>
           <h2>Resultado de la Predicción</h2>
-
+          <span class="loader-prediction"></span>
+        </div>
+        <div class="prediction-content">
           <div class="prediction-box">
             <p class="prediction-label">Presión Arterial Sistólica Estimada:</p>
             <span class="prediction-pas-value">0 mmHg</span>

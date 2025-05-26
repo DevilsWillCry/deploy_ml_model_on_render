@@ -14,11 +14,12 @@ from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.tree import DecisionTreeRegressor
 
-
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
+
+import matplotlib.pyplot as plt
 
 import joblib
 
@@ -113,136 +114,212 @@ def max_length(data):
         return max_length
 
 
-@app.get("/training_model")
-def get_data():
-    max_len = max_length(data)
-    print(max_len)
-    if data:
-        for key, value in data.items():
-            amp_pulso.extend(data[key]["amp_pulso"] + [np.nan] * (max_len - len(data[key]["amp_pulso"])))
-            area_pulso.extend(data[key]["area_pulso"] + [np.nan] * (max_len - len(data[key]["area_pulso"])))
-            t_cresta.extend(data[key]["t_cresta"] + [np.nan] * (max_len - len(data[key]["t_cresta"])))
-            t_descnd.extend(data[key]["t_descnd"] + [np.nan] * (max_len - len(data[key]["t_descnd"])))
-            pico_a_pico.extend(data[key]["pico_a_pico"] + [np.nan] * (max_len - len(data[key]["pico_a_pico"])))
-            min_a_min.extend(data[key]["min_a_min"] + [np.nan] * (max_len - len(data[key]["min_a_min"])))
-            value_max.extend(data[key]["value_max"] + [np.nan] * (max_len - len(data[key]["value_max"])))
+def normalizar_datos(data):
+    
+    # If data is not a list convert it to one
+    for(key, value) in data.items():
+        for (subkey, subvalue) in value.items():
+            if not isinstance(subvalue, list) and subkey != "pad" and subkey != "pas":
+                subvalue = list(subvalue.values())
+                # Check if subvalue have no none values and not take it
+                for i in range(len(subvalue)):
+                    if subvalue[i] is None:
+                        #delete the value
+                        subvalue.remove(subvalue[i])
+                data[key][subkey] = subvalue
+    return data
             
 
-            #Repetir para PAS y PAD para cada medición
-            pas.extend([data[key]["pas"]] * max_len)
-            pad.extend([data[key]["pad"]] * max_len)
-
-        df = pd.DataFrame({
-            "amp_pulso": amp_pulso,
-            "area_pulso": area_pulso,
-            "t_cresta": t_cresta,
-            "t_descnd": t_descnd,
-            "pico_a_pico": pico_a_pico,
-            "min_a_min": min_a_min,
-            "value_max": value_max,
-            "pas": pas,
-            "pad": pad
-        })
-        #Eliminar filas con valores nulos
-        df = df.dropna()
-        
-
-        print(df)
-        # Ver si hay valores atípicos utilizando el rango intercuartílico        
-        Q1 = df.quantile(0.25)
-        Q3 = df.quantile(0.75)
-        IQR = Q3 - Q1
-        df = df[~((df < (Q1 - 1.5 * IQR)) | (df > (Q3 + 1.5 * IQR))).any(axis=1)]
-        
-
-        X = df.drop(columns=["pas", "pad"], axis=1)
-        y = df[["pas", "pad"]]
-
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-        # Entrenar el modelo
-        model = DecisionTreeRegressor(random_state=42)
-        model.fit(X_train, y_train)
-
-        #Realizar predicciones
-        y_pred = model.predict(X_test)
-        
-        # Ver las predicciones
-        #print(y_pred)
-
-        # Evaluamos el modelo utilizando MAE
-        mae = mean_absolute_error(y_test, y_pred)
-        print(f'Mean Absolute Error: {mae}')
-
-        # Evaluamos el modelo utilizando MSE
-        mse = mean_squared_error(y_test, y_pred)
-        print(f'Mean Squared Error: {mse}')
-
-        # Evaluamos el modelo utilizando R2
-        r2 = r2_score(y_test, y_pred)
-        print(f'R2: {r2}')
-
-        # Guardar el modelo
-        joblib.dump(model, 'model4.joblib')
-
-        return {"message": "Modelo entrenado y guardado con éxito"}
-
-
-        """
-
-        # Escalar los datos
-        scaler = StandardScaler()
-
-        # Escalar todas las columnas excepto "pas" y "pad"
-        columns_to_scale = df.columns.difference(["pas", "pad"])
-
-        # Escalar todas las columnas excepto "pas" y "pad" usando StandardScaler
-        df_scaled = df.copy()
-        df_scaled[columns_to_scale] = scaler.fit_transform(df[columns_to_scale])
-        
-        # Dividir los datos en conjuntos de entrenamiento y prueba
-        
-        X = df_scaled.drop(columns=["pas", "pad"], axis=1)
-        y = df_scaled[["pas", "pad"]]
-
-        # Guardar el scaler también
-        joblib.dump(scaler, 'scaler4.joblib')
-        """
-
-    else:
-        return {"error": "No se encontraron datos"}
+@app.get("/training_model")
+def get_data():
+    newData = normalizar_datos(data)
     
+    if not newData:
+        return {"message": "No hay datos"}
+
+    lista_dfs = []
+
+    for key, valores in newData.items():
+        # Calcular la longitud mínima entre las listas
+        lengths = [
+            len(valores["amp_pulso"]),
+            len(valores["t_cresta"]),
+            len(valores["t_descnd"]),
+            len(valores["pico_a_pico"]),
+            len(valores["min_a_min"])
+        ]
+        min_len = min(lengths)
+
+        # Crear DataFrame truncando todas las listas al mismo tamaño
+        df_temp = pd.DataFrame({
+            "amp_pulso": valores["amp_pulso"][:min_len],
+            "t_cresta": valores["t_cresta"][:min_len],
+            "t_descnd": valores["t_descnd"][:min_len],
+            "pico_a_pico": valores["pico_a_pico"][:min_len],
+            "min_a_min": valores["min_a_min"][:min_len]
+        })
+
+        # Repetir pas y pad para cada fila
+        df_temp["pas"] = [valores["pas"]] * min_len
+        df_temp["pad"] = [valores["pad"]] * min_len
+
+        lista_dfs.append(df_temp)
+
+    # Concatenar todos los DataFrames
+    df = pd.concat(lista_dfs, ignore_index=True)
+
+    # Eliminar filas con datos incompletos
+    df = df.dropna()
+
+    #df.to_csv("datos_procesados.csv", index=False)
+
+    # Eliminar outliers con IQR
+    '''
+    Q1 = df.quantile(0.25)
+    Q3 = df.quantile(0.75)
+    IQR = Q3 - Q1
+    df = df[~((df < (Q1 - 1.5 * IQR)) | (df > (Q3 + 1.5 * IQR))).any(axis=1)]
+    '''
+
+    X = df.drop(columns=["pas", "pad"], axis=1)
+    y_pas = df[["pas"]]
+    y_pad = df[["pad"]]
+
+    # Escalar los datos
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    # Dividir los datos en conjuntos de entrenamiento y prueba PAS
+    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_pas, test_size=0.2, random_state=42)
+
+    # Dividir los datos en conjuntos de entrenamiento y prueba PAD
+    X_train_pad, X_test_pad, y_train_pad, y_test_pad = train_test_split(X_scaled, y_pad, test_size=0.2, random_state=42)
+
+    # Training RandomForest Regressor
+    model_pas = RandomForestRegressor(n_estimators=100, random_state=42)
+    model_pas.fit(X_train, y_train)
+
+    # Training Decision Tree Regressor
+    model_pad = DecisionTreeRegressor(random_state=42)
+    model_pad.fit(X_train_pad, y_train_pad)
+
+    # Realizar predicciones
+    y_pred = model_pas.predict(X_test)
+    y_pred_pad = model_pad.predict(X_test_pad)
+
+    #Realizar predicciones sobre los datos y_train
+    y_train_pred = model_pas.predict(X_train)
+    #Realizar predicciones sobre los datos y_train_pad
+    y_train_pad_pred = model_pad.predict(X_train_pad)
+
+
+    #Save metrics in a JSON file
+    metrics_pas = {
+        "MAE": mean_absolute_error(y_test, y_pred),
+        "MSE": mean_squared_error(y_test, y_pred),
+        "R2": r2_score(y_test, y_pred)
+    }
+    with open("metrics_pas.json", "w") as f:
+        json.dump(metrics_pas, f)
+
+    # Save metrics in JSON file to PAD
+    metrics_pad = {
+        "MAE": mean_absolute_error(y_test_pad, y_pred_pad),
+        "MSE": mean_squared_error(y_test_pad, y_pred_pad),
+        "R2": r2_score(y_test_pad, y_pred_pad)
+    }
+    with open("metrics_pad.json", "w") as f:
+        json.dump(metrics_pad, f)
+
+    # Graficar PAS
+    plt.figure(figsize=(12, 5))
+
+    plt.subplot(1, 1, 1)
+    plt.scatter(y_test, y_pred, alpha=0.5, color='blue')
+    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--')  # línea ideal
+    plt.xlabel("PAS Real")
+    plt.ylabel("PAS Predicho")
+    plt.title("Dispersión PAS: Real vs Predicho")
+    plt.savefig('dispersion_prueba_pas.png')
+
+    # Ajustar regresión lineal a los puntos predichos
+    reg = LinearRegression().fit(y_test.values.reshape(-1, 1), y_pred)
+    linea_ajuste = reg.predict(y_test.values.reshape(-1, 1))
+
+    plt.figure(figsize=(8, 4))
+    plt.scatter(y_test, y_pred, alpha=0.5, color='blue', label="Predicciones")
+    plt.plot(y_test, linea_ajuste, 'g-', label="Ajuste lineal")
+    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', label="Ideal")
+    plt.xlabel("PAS Real")
+    plt.ylabel("PAS Predicho")
+    plt.title("Dispersión PAS: Real vs Predicho")
+    plt.legend()
+    #plt.savefig('dispersion_pas_mejorada.png', dpi=300, bbox_inches='tight')
+
+    # Graficar PAS entrenamiento
+    plt.figure(figsize=(8, 6))
+    plt.scatter(y_train, y_train_pred, alpha=0.5, color='green')
+    plt.plot([y_train.min(), y_train.max()], [y_train.min(), y_train.max()], 'r--')
+    plt.xlabel("PAS Real (entrenamiento)")
+    plt.ylabel("PAS Predicho (entrenamiento)")
+    plt.title("Dispersión PAS: Entrenamiento vs Predicción")
+    #plt.savefig("dispersión_entrenamiento_pas.png", dpi=300, bbox_inches='tight')
+
+
+    # Graficar PAD
+    plt.figure(figsize=(12, 5))
+
+    plt.subplot(1, 1, 1)
+    plt.scatter(y_test_pad, y_pred_pad, alpha=0.5, color='blue')
+    plt.plot([y_test_pad.min(), y_test_pad.max()], [y_test_pad.min(), y_test_pad.max()], 'r--')  # linea ideal
+    plt.xlabel("PAD Real")
+    plt.ylabel("PAD Predicho")
+    plt.title("Dispersión PAD: Real vs Predicho")
+    plt.savefig('dispersion_prueba_pad.png')
+
+
+    joblib.dump(model_pas, 'model_pas.joblib')
+    joblib.dump(model_pad, 'model_pad.joblib')
+
+    joblib.dump(scaler, 'scaler.joblib')
+
+
+    #Send metrics to Firebase
+    ref = db.reference("/sensor/model_is_trained")
+    ref.set(True)
+
+    return {"message": "Modelo entrenado y guardado con éxito"}
 
 @app.get("/predict")
 def predict():
     # Cargar el modelo
-    model = joblib.load('model4.joblib')
-    
-    """
-    scaler = joblib.load('scaler.joblib')
-    new_data_scaled = scaler.transform(new_data)
-    """
+    model_pas = joblib.load('model_pas.joblib')
+    model_pad = joblib.load('model_pad.joblib')
 
-    # Hacer petición a Firebase al documento sensor/data_to_predict
+
+    # Cargar el scaler
+    scaler = joblib.load('scaler.joblib')
+    
+    # Leer datos de Firebase
     ref = db.reference("/sensor/data_to_predict")
     data = ref.get()
 
-    # Obtener las variables
-    amp_pulso = data["amp_pulso"]
-    area_pulso = data["area_pulso"]
-    t_cresta = data["t_cresta"]
-    t_descnd = data["t_descnd"]
-    pico_a_pico = data["pico_a_pico"]
-    min_a_min = data["min_a_min"]
-    value_max = data["value_max"]
+    # Variables esperadas por el modelo (en orden)
+    columnas = ["amp_pulso", "t_cresta", "t_descnd", "pico_a_pico", "min_a_min"]
 
-    # Preparar los datos
-    new_data = [[amp_pulso, area_pulso, t_cresta, t_descnd, pico_a_pico, min_a_min, value_max]]    
+    # Crear DataFrame con nombres de columnas
+    new_data = pd.DataFrame([[data[col] for col in columnas]], columns=columnas)
 
-    # Hacer predicciones.
-    prediction = model.predict(new_data)
+    # Escalar los datos
+    new_data_scaled = scaler.transform(new_data)
 
-    # Mostrar las predicciones
-    print(f"Predicciones para PAS y PAD: {prediction}")
+    # Hacer predicción
+    prediction_pas = model_pas.predict(new_data_scaled)
 
-    return {"prediction": [prediction[0][0], prediction[0][1]] }
+    prediction_pad = model_pad.predict(new_data_scaled)
+
+    print(f"Predicciones para PAS y PAD: {prediction_pas}, {prediction_pad}")
+
+    # return {"prediction": [float(prediction[0][0]), float(prediction[0][1])] }
+
+    return {"prediction": [float(prediction_pas), float(prediction_pad)]}
