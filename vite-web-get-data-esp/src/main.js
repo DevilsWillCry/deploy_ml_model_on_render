@@ -10,7 +10,6 @@ import {
   get,
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
-
 import Swal from "sweetalert2";
 
 export const firebaseConfig = {
@@ -22,6 +21,10 @@ export const firebaseConfig = {
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
+
+const isProduction = import.meta.env.VITE_NODE_ENV;
+
+console.log(isProduction)
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
@@ -166,7 +169,8 @@ onValue(ref(db, "sensor/data_to_predict"), (_) => {
     return;
   }
 
-  const url = "https://deploy-ml-model-on-render.onrender.com/predict";
+  const url = isProduction == "production" ?
+  "https://deploy-ml-model-on-render.onrender.com/predict" : "http://127.0.0.1:8000/predict";
   if (countFirstPrediction >= 2) {
     fetch(url)
       .then((response) => response.json())
@@ -299,6 +303,14 @@ document.addEventListener("DOMContentLoaded", function () {
   document.querySelector(".heart").classList.add("oculto");
   document.getElementById("pas").value = "";
   document.getElementById("pad").value = "";
+
+  set(ref(db, `sensor/model_is_trained`), false)
+    .then(() => {
+      console.log("model_trained guardado correctamente.");
+    })
+    .catch((err) => {
+      console.error("Error al guardar model_trained: ", err);
+    });
   // set tomar_medicion a false
   set(ref(db, `sensor/tomar_medicion`), false)
     .then(() => {
@@ -413,30 +425,28 @@ function ocultar(contenedor) {
 
 // Al terminar la animación de salida de container
 container.addEventListener("animationend", () => {
-  if(container.classList.contains("next-page")) {
+  if (container.classList.contains("next-page")) {
     container.classList.add("hidden-container");
     container.classList.remove("visible-container");
-    
+
     containerPredictions.classList.add("visible");
-    
   }
 
-  if(container.classList.contains("next-page")) {
+  if (container.classList.contains("next-page")) {
     container.classList.remove("next-page");
   }
 });
 
-
 // Al terminar la animación de salida de containerPredictions
 containerPredictions.addEventListener("animationend", () => {
-  if(containerPredictions.classList.contains("prev-page")) {
+  if (containerPredictions.classList.contains("prev-page")) {
     containerPredictions.classList.add("hidden-container-predictions");
     containerPredictions.classList.remove("visible");
 
     container.classList.add("visible-container");
   }
-  
-  if(containerPredictions.classList.contains("prev-page")) {
+
+  if (containerPredictions.classList.contains("prev-page")) {
     containerPredictions.classList.remove("prev-page");
   }
 });
@@ -454,23 +464,22 @@ arrowLeft.addEventListener("click", () => {
 
 // Al hacer clic en avanzar
 arrowRight.addEventListener("click", () => {
-
   container.classList.add("next-page");
   container.classList.add("hidden-container");
   container.classList.remove("visible-container");
 
   containerPredictions.classList.add("visible");
   containerPredictions.classList.remove("prev-page");
-  containerPredictions.classList.remove("hidden-container-predictions")
+  containerPredictions.classList.remove("hidden-container-predictions");
 });
-
 
 onValue(ref(db, "sensor/start_predictions"), (snapshot) => {
   if (snapshot.val() && isTrainingModel) {
     document.querySelector(".prediction-content").style.display = "none";
     document.querySelector(".loader-prediction").style.display = "block";
     setTimeout(() => {
-      const url = "https://deploy-ml-model-on-render.onrender.com/training_model";
+      const url = isProduction == "production" ?
+        "https://deploy-ml-model-on-render.onrender.com/training_model" : "http://127.0.0.1:8000/training_model";
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
