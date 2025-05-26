@@ -97,7 +97,7 @@ if credentialsFirebase and not firebase_admin._apps:
 
 app = FastAPI()
 
-origins = ["http://localhost:5173", "http://127.0.0.1:5173", "https://vitapressure.vercel.app/"]
+origins = ["http://localhost:5173", "http://127.0.0.1:5173", "https://vitapressure.vercel.app"]
 
 app.add_middleware(
     CORSMiddleware,
