@@ -473,6 +473,34 @@ arrowRight.addEventListener("click", () => {
   containerPredictions.classList.remove("hidden-container-predictions");
 });
 
+const avancedOptionesButton = document.querySelector(".advanced-options");
+
+avancedOptionesButton?.addEventListener("click", () => {
+  const url = isProduction == "production" ?
+    "https://deploy-ml-model-on-render.onrender.com/show-graphs" : "http://127.0.0.1:8000/show-graphs";
+  fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      // Insert graph png into img tags to pas and pad in prediction-graph
+      document.querySelector(".pas-graph").src = data.pas;
+      document.querySelector(".pad-graph").src = data.pad;
+    })
+    .catch((error) => {
+      //Use SweetAlert 2
+      Swal.fire({
+        title: "Error",
+        text: "Error al mostrar los gráficos.",
+        icon: "error",
+        showConfirmButton: true,
+      });
+      console.error("Error al mostrar los gráficos:", error);
+    });
+});
+
+
+
+
 onValue(ref(db, "sensor/start_predictions"), (snapshot) => {
   if (snapshot.val() && isTrainingModel) {
     document.querySelector(".prediction-content").style.display = "none";
@@ -504,6 +532,24 @@ onValue(ref(db, "sensor/model_is_trained"), (snapshot) => {
     document.querySelector(".prediction-content").style.display = "flex";
     document.querySelector(".loader-prediction").style.display = "none";
     isTrainingModel = false;
+    const urlMetrics = isProduction == "production" ?
+      "https://deploy-ml-model-on-render.onrender.com/metrics" : "http://127.0.0.1:8000/metrics";
+    fetch(urlMetrics)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data.result);
+        document.querySelector(".confidence").textContent = "Nivel de confianza del modelo: " + data.result.toFixed(2) + "%";
+      })
+      .catch((error) => {
+        //Use SweetAlert 2
+        Swal.fire({
+          title: "Error",
+          text: "Error al obtener las metricas.",
+          icon: "error",
+          showConfirmButton: true,
+        });
+        console.error("Error al obtener las metricas:", error);
+      });
   }
 });
 

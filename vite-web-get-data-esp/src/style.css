@@ -699,6 +699,22 @@ Verificar el tamaño de los boxes.
 } 
 
 
+.prediction-graph{
+  width: 100%;
+  height: 10rem;
+  border-radius: 0.75rem;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.05);
+  background-color: red;
+}
+
+.pas-graph{
+  width: 100%;
+  height: 10rem;
+  border-radius: 0.75rem;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.05);
+  background-color: red;
+}
+
 @media (max-width: 800px) {
   .container {
     position: relative;

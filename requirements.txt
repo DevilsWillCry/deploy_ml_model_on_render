@@ -6,3 +6,5 @@ scikit-learn
 joblib
 firebase-admin
 matplotlib
+cloudinary
+python-dotenv

@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+import cloudinary
+import cloudinary.uploader
+from dotenv import load_dotenv
+
 import pandas as pd
 import numpy as np
 import firebase_admin
@@ -44,6 +48,14 @@ value_max = []
 pas = []
 pad = []
 
+# Configurar Cloudinary
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True
+)
+
 # Cargar credenciales de Firebase
 if firebase_json:
     print("✅ Variable cargada correctamente")
@@ -86,6 +98,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+IS_RENDER = os.path.exists("/etc/secrets/credentials_cloudinary")
 
 @app.get("/")
 def read_root():
@@ -332,8 +346,14 @@ def metrics():
 
 @app.get("/show-graphs")
 def show_graphs():
+    if IS_RENDER:
+        load_dotenv("/etc/secrets/credentials_cloudinary")
+    else:
+        load_dotenv()
+    upload_pas = cloudinary.uploader.upload("dispersion_prueba_pas.png")
+    upload_pad = cloudinary.uploader.upload("dispersion_prueba_pad.png")
 
-    return {"graph_pas": "./dispersion_pas.png", "graph_pad": "./dispersion_prueba_pad.png"}
+    return {"pas": upload_pas["url"], "pad": upload_pad["url"]}
     
     
     
