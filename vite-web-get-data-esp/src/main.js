@@ -165,7 +165,7 @@ onValue(ref(db, "sensor/data_to_predict"), (_) => {
     return;
   }
 
-  const url = "http://127.0.0.1:8000/predict";
+  const url = "https://deploy-ml-model-on-render.onrender.com/predict";
   if (countFirstPrediction >= 2) {
     fetch(url)
       .then((response) => response.json())
@@ -469,7 +469,7 @@ onValue(ref(db, "sensor/start_predictions"), (snapshot) => {
     document.querySelector(".prediction-content").style.display = "none";
     document.querySelector(".loader-prediction").style.display = "block";
     setTimeout(() => {
-      const url = "http://127.0.0.1:8000/training_model";
+      const url = "https://deploy-ml-model-on-render.onrender.com/training_model";
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
