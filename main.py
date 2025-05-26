@@ -77,7 +77,7 @@ if credentialsFirebase and not firebase_admin._apps:
 
 app = FastAPI()
 
-origins = ["http://localhost:5173", "http://127.0.0.1:5173"]
+origins = ["http://localhost:5173", "http://127.0.0.1:5173", "https://vitapressure.vercel.app/"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -209,7 +209,6 @@ def get_data():
 
     #Realizar predicciones sobre los datos y_train
     y_train_pred = model_pas.predict(X_train)
-    #Realizar predicciones sobre los datos y_train_pad
     y_train_pad_pred = model_pad.predict(X_train_pad)
 
 
@@ -241,20 +240,8 @@ def get_data():
     plt.ylabel("PAS Predicho")
     plt.title("Dispersión PAS: Real vs Predicho")
     plt.savefig('dispersion_prueba_pas.png')
+    plt.close()
 
-    # Ajustar regresión lineal a los puntos predichos
-    reg = LinearRegression().fit(y_test.values.reshape(-1, 1), y_pred)
-    linea_ajuste = reg.predict(y_test.values.reshape(-1, 1))
-
-    plt.figure(figsize=(8, 4))
-    plt.scatter(y_test, y_pred, alpha=0.5, color='blue', label="Predicciones")
-    plt.plot(y_test, linea_ajuste, 'g-', label="Ajuste lineal")
-    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', label="Ideal")
-    plt.xlabel("PAS Real")
-    plt.ylabel("PAS Predicho")
-    plt.title("Dispersión PAS: Real vs Predicho")
-    plt.legend()
-    #plt.savefig('dispersion_pas_mejorada.png', dpi=300, bbox_inches='tight')
 
     # Graficar PAS entrenamiento
     plt.figure(figsize=(8, 6))
@@ -264,6 +251,7 @@ def get_data():
     plt.ylabel("PAS Predicho (entrenamiento)")
     plt.title("Dispersión PAS: Entrenamiento vs Predicción")
     #plt.savefig("dispersión_entrenamiento_pas.png", dpi=300, bbox_inches='tight')
+    #plt.close()
 
 
     # Graficar PAD
@@ -276,6 +264,7 @@ def get_data():
     plt.ylabel("PAD Predicho")
     plt.title("Dispersión PAD: Real vs Predicho")
     plt.savefig('dispersion_prueba_pad.png')
+    plt.close()
 
 
     joblib.dump(model_pas, 'model_pas.joblib')
@@ -343,7 +332,7 @@ def metrics():
 
 @app.get("/show-graphs")
 def show_graphs():
-    
+
     return {"graph_pas": "./dispersion_pas.png", "graph_pad": "./dispersion_prueba_pad.png"}
     
     
