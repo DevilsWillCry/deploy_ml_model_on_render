@@ -155,6 +155,16 @@ def normalizar_datos(data):
 
 @app.get("/training_model")
 def get_data():
+    # Confirm if data is not empty and firebase is connected
+    if not data:
+        return {"message": "No hay datos"}
+
+    if not firebase_admin._apps:
+        return {"message": "Firebase no conectado"}
+
+    ref = db.reference("/sensor/data")
+    data = ref.get()
+
     newData = normalizar_datos(data)
     
     if not newData:
