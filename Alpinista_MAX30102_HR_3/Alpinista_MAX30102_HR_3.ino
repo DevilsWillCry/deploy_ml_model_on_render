@@ -62,7 +62,7 @@ int countMin_A_Min = 0;
 int countArea_Pulso = 0;
 
 unsigned long lastUpdateTime = 0;
-const unsigned long updateInterval = 10000; 
+const unsigned long updateInterval = 15000; 
 
 bool ReadyToPredict = false;
 
@@ -97,6 +97,7 @@ void handleRoot() {
 void handleGuardar() {
   String ssid = server.arg("ssid");
   String pass = server.arg("pass");
+
   // && pass.length() > 0
   if (ssid.length() > 0) {
     prefs.begin("wifi", false);
@@ -182,23 +183,25 @@ void setup() {
     iniciarAP(); // Si no conecta, iniciar AP para configurar
   }
 
-  // 🔄 Configurar NTP para obtener hora real
-  configTime(0, 0, "pool.ntp.org");  // UTC (puedes ajustar GMT si quieres)
+  // ✅ 2. Sincronizar la hora (requerido para SSL)
+  configTime(0, 0, "pool.ntp.org", "time.nist.gov");
   Serial.println("Esperando sincronización de hora...");
   time_t now;
   while (time(&now) < 100000) {
     delay(1000);
     Serial.print(".");
   }
+
   Serial.println("\nHora sincronizada correctamente");
 
   // Firebase
   config.api_key        = API_KEY;
   config.database_url   = DATABASE_URL;
-  config.timeout.serverResponse = 10000;
+  config.timeout.serverResponse = 30000;
   if (Firebase.signUp(&config, &auth, "", "")) signupOk = true;
-  Firebase.begin(&config, &auth);
 
+
+  Firebase.begin(&config, &auth);
   // Reconexión automática WiFi
   Firebase.reconnectWiFi(true);
 
@@ -484,7 +487,6 @@ void loop() {
 
           FirebaseJson json_prediction;
           json_prediction.add("amp_pulso", amp_pulso);
-          json_prediction.add("area_pulso", area_pulso);
           json_prediction.add("t_cresta", t_cresta);
           json_prediction.add("t_descnd", t_descnd);
           json_prediction.add("pico_a_pico", pico_a_pico);
@@ -492,18 +494,21 @@ void loop() {
           /*
           json_prediction.add("value_max", value_max);
           */
-
-          if (!Firebase.RTDB.setJSON(&fbdo, "sensor/data_to_predict", &json_prediction)) {
-          Serial.println("Error al establecer: " + fbdo.errorReason());
-          } else {
-          Serial.println("Datos enviados a Firebase");
-          } 
-
-          if(Firebase.RTDB.getBool(&fbdo, "sensor/tomar_medicion")){
-            if (fbdo.boolData()){
-              ReadyToPredict = false;
+          
+          if(Firebase.ready() && WiFi.status() == WL_CONNECTED){
+            if (!Firebase.RTDB.setJSON(&fbdo, "sensor/data_to_predict", &json_prediction)) {
+            Serial.println("Error al establecer: " + fbdo.errorReason());
+            } else {
+            Serial.println("Datos enviados a Firebase");
+            } 
+            if(Firebase.RTDB.getBool(&fbdo, "sensor/tomar_medicion")){
+              if (fbdo.boolData()){
+                ReadyToPredict = false;
+              }
             }
           }
+
+
       }
      }
 

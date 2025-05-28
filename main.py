@@ -194,7 +194,7 @@ def get_data():
     # Eliminar filas con datos incompletos
     df = df.dropna()
 
-    #df.to_csv("datos_procesados.csv", index=False)
+    df.to_csv("datos_procesados.csv", index=False)
 
     # Eliminar outliers con IQR
     '''
@@ -205,8 +205,8 @@ def get_data():
     '''
 
     X = df.drop(columns=["pas", "pad"], axis=1)
-    y_pas = df[["pas"]]
-    y_pad = df[["pad"]]
+    y_pas = df["pas"]
+    y_pad = df["pad"]
 
     # Escalar los datos
     scaler = StandardScaler()
@@ -218,12 +218,12 @@ def get_data():
     # Dividir los datos en conjuntos de entrenamiento y prueba PAD
     X_train_pad, X_test_pad, y_train_pad, y_test_pad = train_test_split(X_scaled, y_pad, test_size=0.2, random_state=42)
 
-    # Training RandomForest Regressor
+    # Training RandomForest Regressor for PAS
     model_pas = RandomForestRegressor(n_estimators=100, random_state=42)
     model_pas.fit(X_train, y_train)
 
-    # Training Decision Tree Regressor
-    model_pad = DecisionTreeRegressor(random_state=42)
+    # Training RandomForest Regressor for PAD
+    model_pad = RandomForestRegressor(n_estimators=100, random_state=42)
     model_pad.fit(X_train_pad, y_train_pad)
 
     # Realizar predicciones
