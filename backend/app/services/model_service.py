@@ -11,7 +11,7 @@ from typing import Dict, List, Optional, Tuple
 import json
 from ..utils.data_processing import add_gaussian_noise
 import os
-
+from sklearn.model_selection import KFold
 
 from ..repositories.firebase_repository import FirebaseRepository
 class ModelService:
@@ -66,41 +66,66 @@ class ModelService:
             return False
 
     def train_models(self, df: pd.DataFrame):
-        X = df.drop(columns=["pas", "pad"], axis=1)
-        y_pas = df["pas"]
-        y_pad = df["pad"]
+        kf = KFold(n_splits=5, shuffle=True, random_state=42)
 
+        # Separación de variables
+        X = df.drop(columns=["pas", "pad"], axis=1)
+        y_pas = df["pas"].values
+        y_pad = df["pad"].values
+
+        # Escalado
         X_scaled = self.scaler.fit_transform(X)
 
-        # PAS Model
-        X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_pas, test_size=0.2, random_state=42)
-        self.model_pas.fit(X_train, y_train)
-        y_pred = self.model_pas.predict(X_test)
-        
-        # PAD Model
-        X_train_pad, X_test_pad, y_train_pad, y_test_pad = train_test_split(X_scaled, y_pad, test_size=0.2, random_state=42)
-        self.model_pad.fit(X_train_pad, y_train_pad)
-        y_pred_pad = self.model_pad.predict(X_test_pad)
+        pas_errors = []
+        pad_errors = []
 
-        print("Cantidad de datos en y_test:", len(y_test))
-        print("Valores únicos en y_test:", np.unique(y_test))
+        for fold, (train_index, test_index) in enumerate(kf.split(X_scaled), 1):
+            X_train, X_test = X_scaled[train_index], X_scaled[test_index]
+            y_train_pas, y_test_pas = y_pas[train_index], y_pas[test_index]
+            y_train_pad, y_test_pad = y_pad[train_index], y_pad[test_index]
+
+            # PAS
+            self.model_pas.fit(X_train, y_train_pas)
+            y_pred_pas = self.model_pas.predict(X_test)
+            mae_pas = mean_absolute_error(y_test_pas, y_pred_pas)
+            pas_errors.append(mae_pas)
+
+            # PAD
+            self.model_pad.fit(X_train, y_train_pad)
+            y_pred_pad = self.model_pad.predict(X_test)
+            mae_pad = mean_absolute_error(y_test_pad, y_pred_pad)
+            pad_errors.append(mae_pad)
+
+            print(f"Fold {fold} - MAE PAS: {mae_pas:.2f}, MAE PAD: {mae_pad:.2f}")
+
+        # Imprimir información de evaluación
+        print("\n--- Validación cruzada finalizada ---")
+        print(f"MAE PAS promedio (5-fold): {sum(pas_errors)/len(pas_errors):.2f}")
+        print(f"MAE PAD promedio (5-fold): {sum(pad_errors)/len(pad_errors):.2f}")
+        print("Cantidad de datos en y_test_pas:", len(y_test_pas))
+        print("Valores únicos en y_test_pas:", np.unique(y_test_pas))
         print("Cantidad de datos en y_test_pad:", len(y_test_pad))
         print("Valores únicos en y_test_pad:", np.unique(y_test_pad))
 
+        # Entrenamiento final con todos los datos disponibles
+        self.model_pas.fit(X_scaled, y_pas)
+        self.model_pad.fit(X_scaled, y_pad)
 
-        # Almacena los datos de evaluación
-        joblib.dump({'y_true': y_test, 'y_pred': y_pred}, 'models/eval_pas.joblib')
+
+        # Almacenar evaluaciones
+        joblib.dump({'y_true': y_test_pas, 'y_pred': y_pred_pas}, 'models/eval_pas.joblib')
         joblib.dump({'y_true': y_test_pad, 'y_pred': y_pred_pad}, 'models/eval_pad.joblib')
 
-        # Send to firebase /model_is_trained = True
+        # Actualizar estado en Firebase
         firebase_repository = FirebaseRepository()
         firebase_repository.update_model_status(True)
 
-        # Save metrics and models 
-        self._save_metrics(y_test, y_pred, y_test_pad, y_pred_pad)
+        # Guardar métricas y modelos
+        self._save_metrics(y_test_pas, y_pred_pas, y_test_pad, y_pred_pad)
         self._save_models()
-        
+
         return {"message": "Modelo entrenado y guardado con éxito"}
+
     
     def predict(self, data: Dict[str, float]) -> List[float]:
         """Realiza predicción solo con modelos entrenados"""

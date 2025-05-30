@@ -9,4 +9,5 @@ matplotlib
 cloudinary
 python-dotenv
 pydantic
+pydantic_settings
 psutil
