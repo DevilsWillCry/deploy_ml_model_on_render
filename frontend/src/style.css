@@ -712,11 +712,6 @@ Verificar el tamaño de los boxes.
   display: flex !important;
 }
 
-.pas-graph {
-  width: 50%;
-  height: 100%;
-  object-fit: cover;
-}
 
 .my-swal-popup {
   width: 100%;
@@ -724,6 +719,12 @@ Verificar el tamaño de los boxes.
 }
 
 .my-swal-image{
+  object-fit: contain;
+}
+
+.pas-graph {
+  width: 50%;
+  height: 100%;
   object-fit: contain;
 }
 
@@ -737,7 +738,7 @@ Verificar el tamaño de los boxes.
 .pad-graph {
   width: 50%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .pad-graph:hover {

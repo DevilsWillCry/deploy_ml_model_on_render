@@ -8,3 +8,5 @@ firebase-admin
 matplotlib
 cloudinary
 python-dotenv
+pydantic
+psutil

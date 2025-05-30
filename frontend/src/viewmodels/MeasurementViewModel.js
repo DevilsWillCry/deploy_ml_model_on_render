@@ -1,0 +1,69 @@
+import Swal from 'sweetalert2';
+import { FirebaseService } from '../core/firebase.service.js';
+
+export class MeasurementViewModel {
+    constructor() {
+        this.opcionSeleccionada = "1";
+        this.opcionSeleccionadaEsp = "1";
+        this.checkingAllData = {
+            "medition-one": false,
+            "medition-two": false,
+            "medition-three": false,
+            "medition-four": false,
+            "medition-five": false,
+            "medition-one-esp": false,
+            "medition-two-esp": false,
+            "medition-three-esp": false,
+            "medition-four-esp": false,
+            "medition-five-esp": false
+        };
+    }
+
+    async saveMeasurement(pas, pad) {
+        if (!pas || !pad) {
+            throw new Error("Por favor, ingresa ambos valores (PAS y PAD).");
+        }
+
+        const path = `sensor/data/medicion_${this.opcionSeleccionada}`;
+        try {
+            await Promise.all([
+                FirebaseService.setValue(`${path}/pas`, parseInt(pas)),
+                FirebaseService.setValue(`${path}/pad`, parseInt(pad))
+            ]);
+            
+            this.checkingAllData[`medition-${this.getMeditionName()}`] = true;
+            return true;
+        } catch (error) {
+            throw new Error("Error al guardar datos: " + error.message);
+        }
+    }
+
+    getMeditionName() {
+        const names = ["one", "two", "three", "four", "five"];
+        return names[parseInt(this.opcionSeleccionada) - 1];
+    }
+
+    async takeMeasurement() {
+        try {
+            await FirebaseService.setValue('sensor/nodo_actual', `medicion_${this.opcionSeleccionadaEsp}`);
+            const currentStatus = await FirebaseService.getValue('sensor/tomar_medicion');
+            await FirebaseService.setValue('sensor/tomar_medicion', !currentStatus);
+            return true;
+        } catch (error) {
+            throw new Error("Error al tomar medición: " + error.message);
+        }
+    }
+
+    async startPredictions() {
+        const completed = Object.values(this.checkingAllData).every(Boolean) || true;
+        if (!completed) throw new Error("Por favor, complete todas las mediciones.");
+        
+        try {
+            await FirebaseService.setValue('sensor/model_is_trained', false);
+            await FirebaseService.setValue('sensor/start_predictions', true);
+            return true;
+        } catch (error) {
+            throw new Error("Error al iniciar predicciones: " + error.message);
+        }
+    }
+}
