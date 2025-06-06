@@ -7,6 +7,7 @@ export class MeasurementView {
     this.initDOMReferences();
     this.setupEventListeners();
     this.setupMeasurementListener();
+    this.count = 0;
   }
 
   initDOMReferences() {
@@ -41,13 +42,18 @@ export class MeasurementView {
     // Listener para estado de medición
     FirebaseService.listen("sensor/tomar_medicion", (snapshot) => {
       const isMedicionTaked = snapshot.val();
-
       if (isMedicionTaked) {
         this.tomarBtn.style.display = "none";
         this.loaderElement.style.display = "block";
+        this.count++;
       } else {
         this.tomarBtn.style.display = "block";
         this.loaderElement.style.display = "none";
+        if(this.count > 0){
+          if(this.viewModel.saveMeasurementEsp("measurement-esp")){
+            Swal.fire("¡Éxito!", "Medición guardada correctamente.", "success");
+          }
+        }
       }
     });
 
@@ -99,7 +105,8 @@ export class MeasurementView {
     try {
       await this.viewModel.saveMeasurement(
         this.pasInput.value,
-        this.padInput.value
+        this.padInput.value,
+        "measurement"
       );
       Swal.fire("¡Éxito!", "PAS y PAD guardados correctamente.", "success");
     } catch (error) {

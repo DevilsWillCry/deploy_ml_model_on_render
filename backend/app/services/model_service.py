@@ -14,6 +14,8 @@ import os
 from sklearn.model_selection import KFold
 
 from ..repositories.firebase_repository import FirebaseRepository
+from ..services.data_service import DataService
+
 class ModelService:
     def __init__(self):
         self.scaler = StandardScaler()
@@ -66,6 +68,12 @@ class ModelService:
             return False
 
     def train_models(self, df: pd.DataFrame):
+
+        """Guarda los datos procesados en un archivo CSV"""
+        savePd = DataService()
+        savePd.save_processed_data(df, "models/datos_procesados.csv")
+
+        """Entrena los modelos con validación cruzada y guarda los modelos entrenados"""
         kf = KFold(n_splits=5, shuffle=True, random_state=42)
 
         # Separación de variables

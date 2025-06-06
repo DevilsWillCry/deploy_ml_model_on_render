@@ -19,7 +19,7 @@ export class MeasurementViewModel {
         };
     }
 
-    async saveMeasurement(pas, pad) {
+    async saveMeasurement(pas, pad, medition) {
         if (!pas || !pad) {
             throw new Error("Por favor, ingresa ambos valores (PAS y PAD).");
         }
@@ -30,17 +30,30 @@ export class MeasurementViewModel {
                 FirebaseService.setValue(`${path}/pas`, parseInt(pas)),
                 FirebaseService.setValue(`${path}/pad`, parseInt(pad))
             ]);
+
+            console.log(this.getMeditionName(medition));
             
-            this.checkingAllData[`medition-${this.getMeditionName()}`] = true;
+            this.checkingAllData[`medition-${this.getMeditionName(medition)}`] = true;
+
+            document.querySelector(`.medition-${this.getMeditionName(medition)}-completed`).classList.add("checked");
+
+            console.log(this.checkingAllData);
             return true;
         } catch (error) {
             throw new Error("Error al guardar datos: " + error.message);
         }
     }
 
-    getMeditionName() {
+    async saveMeasurementEsp(medition) {
+        console.log(this.getMeditionName(medition));
+        document.querySelector(`.medition-${this.getMeditionName(medition)}-completed`).classList.add("checked");
+        return true;
+    }   
+
+    getMeditionName(medition) {
         const names = ["one", "two", "three", "four", "five"];
-        return names[parseInt(this.opcionSeleccionada) - 1];
+        if(medition == "measurement") return names[parseInt(this.opcionSeleccionada) - 1];    
+        else return names[parseInt(this.opcionSeleccionadaEsp) - 1] + "-esp";
     }
 
     async takeMeasurement() {

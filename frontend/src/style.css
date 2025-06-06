@@ -511,51 +511,51 @@ button:hover {
   font-weight: 400;
 }
 
-.medition-five-completed-esp {
+.medition-five-esp-completed {
   background-color: #e7e7e7;
   width: 20px;
   height: 30px;
   margin-left: 10px;
   border-radius: 20%;
 }
-.medition-five-completed-esp.checked {
+.medition-five-esp-completed.checked {
   background-color: #49e649;
 }
 
-.medition-four-completed-esp {
+.medition-four-esp-completed {
   background-color: #e7e7e7;
   width: 20px;
   height: 30px;
   margin-left: 10px;
   border-radius: 20%;
 }
-.medition-four-completed-esp.checked {
+.medition-four-esp-completed.checked {
   background-color: #49e649;
 }
 
-.medition-three-completed-esp {
+.medition-three-esp-completed {
   background-color: #e7e7e7;
   width: 20px;
   height: 30px;
   margin-left: 10px;
   border-radius: 20%;
 }
-.medition-three-completed-esp.checked {
+.medition-three-esp-completed.checked {
   background-color: #49e649;
 }
 
-.medition-two-completed-esp {
+.medition-two-esp-completed {
   background-color: #e7e7e7;
   width: 20px;
   height: 30px;
   margin-left: 10px;
   border-radius: 20%;
 }
-.medition-two-completed-esp.checked {
+.medition-two-esp-completed.checked {
   background-color: #49e649;
 }
 
-.medition-one-completed-esp {
+.medition-one-esp-completed {
   background-color: #e7e7e7;
   width: 20px;
   height: 30px;
@@ -563,7 +563,7 @@ button:hover {
   border-radius: 20%;
 }
 
-.medition-one-completed-esp.checked {
+.medition-one-esp-completed.checked {
   background-color: #49e649;
 }
 

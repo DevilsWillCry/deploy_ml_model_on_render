@@ -80,9 +80,10 @@ async def get_performance_graphs(
         fig_pas = visualizer.create_scatter_plot(
             y_true_pas, 
             y_pred_pas,
-            title="PAS: Real vs Predicho",
+            title="Desempeño del Modelo en la Estimación de la PAS",
             xlabel="PAS Real (mmHg)",
-            ylabel="PAS Predicho (mmHg)"
+            ylabel="PAS Predicho (mmHg)",
+            pa="pas"
         )
         
         url_pas = visualizer.save_and_upload_plot(fig_pas, "pas_performance")
@@ -93,10 +94,11 @@ async def get_performance_graphs(
         fig_pad = visualizer.create_scatter_plot(
             y_true_pad, 
             y_pred_pad,
-            title="PAD: Real vs Predicho",
+            title="Desempeño del Modelo en la Estimación de la PAD",
             xlabel="PAD Real (mmHg)",
             ylabel="PAD Predicho (mmHg)",
-            color='tab:green'
+            color='tab:green',
+            pa="pad"
         )
         
         url_pad = visualizer.save_and_upload_plot(fig_pad, "pad_performance")

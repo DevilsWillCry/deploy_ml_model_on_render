@@ -130,7 +130,22 @@ def calculate_statistics(data: List[float]) -> Dict[str, float]:
     }
 
 def add_gaussian_noise(X, y, noise_std=0.01, factor=2):
-    """Genera un nuevo conjunto con ruido para regresión."""
+    """
+    Genera un nuevo conjunto con ruido para regresión.
+
+    Añade un ruido gaussiano a los datos X y repite los valores de y
+    para que coincidan con el nuevo tamaño de X.
+
+    Args:
+        X: Array de características
+        y: Array de etiquetas
+        noise_std: Desviación estándar del ruido gaussiano (default 0.01)
+        factor: Número de veces que se multiplica el conjunto (default 2)
+
+    Returns:
+        X_noisy: Array de características con ruido
+        y_repeated: Array de etiquetas repetido para coincidir con X_noisy
+    """
     X_noisy = np.vstack([X + np.random.normal(0, noise_std, X.shape) for _ in range(factor)])
     y_repeated = np.hstack([y for _ in range(factor)])
     return np.vstack([X, X_noisy]), np.hstack([y, y_repeated])

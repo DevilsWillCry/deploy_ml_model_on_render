@@ -3,6 +3,7 @@
 import { FirebaseService } from "./core/firebase.service.js";
 import { MeasurementView } from "./views/measurementView.js";
 import { PredictionView } from "./views/predictionView.js";
+
 const container = document.querySelector(".container");
 const containerPredictions = document.querySelector(".container-predictions");
 const arrowLeft = document.querySelector("#arrow-l");

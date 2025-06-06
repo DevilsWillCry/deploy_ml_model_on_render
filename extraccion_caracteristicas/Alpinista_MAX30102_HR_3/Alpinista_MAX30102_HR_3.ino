@@ -212,7 +212,7 @@ void setup() {
     while (1);
   }
 
-  byte ledBrightness = 200; //Options: 0=Off to 255=50mA 50, 100, 150, 200, 255
+  byte ledBrightness = 150; //Options: 0=Off to 255=50mA 50, 100, 150, 200, 255
   byte sampleAverage = 1; //Options: 1, 2, 4, 8, 16, 32
   byte ledMode = 2; //Options: 1, 2, 3
   int sampleRate = 400; //Options: 50, 100, 200, 400, 800, 1000, 1600

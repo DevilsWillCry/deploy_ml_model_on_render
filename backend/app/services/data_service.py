@@ -60,8 +60,3 @@ class DataService:
         """Guarda los datos procesados en un archivo CSV"""
         df.to_csv(filename, index=False)
         return filename
-
-    def mark_model_as_trained(self):
-        """Marca el modelo como entrenado en Firebase"""
-        ref = db.reference("/sensor/model_is_trained")
-        ref.set(True)

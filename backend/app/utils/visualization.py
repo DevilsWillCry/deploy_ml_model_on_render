@@ -6,6 +6,7 @@ from io import BytesIO
 from typing import Tuple, Dict
 from matplotlib.figure import Figure
 from ..config.settings import settings
+import json
 
 # Configuración de estilos profesionales para gráficos médicos
 plt.style.use('seaborn-v0_8-whitegrid')
@@ -37,7 +38,8 @@ class MedicalVisualizer:
                           title: str = "Real vs Predicho",
                           xlabel: str = "Valor Real",
                           ylabel: str = "Valor Predicho",
-                          color: str = 'tab:blue') -> Figure:
+                          color: str = 'tab:blue',
+                          pa: str = None) -> Figure:
         """
         Crea un gráfico de dispersión profesional para resultados médicos.
         
@@ -73,9 +75,11 @@ class MedicalVisualizer:
         ax.grid(True, linestyle='--', alpha=0.6)
         
         # Texto con métricas
-        mae = np.mean(np.abs(y_true - y_pred))
-        r2 = np.corrcoef(y_true, y_pred)[0, 1]**2
-        stats_text = f"MAE: {mae:.2f}\nR²: {r2:.2f}"
+        with open('models/metrics.json', 'r') as f: metrics = json.load(f)
+
+        mae = metrics[pa]['MAE']
+        r2 = metrics[pa]['R2']
+        stats_text = f"MAE: {mae:.4f}\nR²: {r2:.4f}"
         ax.text(0.05, 0.95, stats_text, transform=ax.transAxes,
                 verticalalignment='top', bbox=dict(boxstyle='round', alpha=0.2, facecolor='white'))
         
@@ -98,6 +102,9 @@ class MedicalVisualizer:
         buf = BytesIO()
         fig.savefig(buf, format='png', bbox_inches='tight', dpi=300)
         buf.seek(0)
+
+        # Guardar en disco
+        fig.savefig(f'models/{filename}.png', bbox_inches='tight', dpi=300)
         
         # Subir a Cloudinary
         upload_result = cloudinary.uploader.upload(
