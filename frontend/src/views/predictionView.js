@@ -2,7 +2,6 @@ import Swal from "sweetalert2";
 import { PredictionViewModel } from "../viewmodels/PredictionViewModel.js";
 import { FirebaseService } from "../core/firebase.service.js";
 
-
 //Take the current language from local storage
 let currentLanguage = localStorage.getItem("language");
 
@@ -27,14 +26,24 @@ export class PredictionView {
     this.confidenceElement = document.querySelector(".confidence");
     this.startPredictionsBtn = document.querySelector(".start-predictions");
     this.inputLanguage = document.getElementById("language-toggle");
+    this.pas_placeholder = document.getElementById("pas");
+    this.pad_placeholder = document.getElementById("pad");
   }
 
   setupEventListeners() {
     this.advancedOptionsBtn?.addEventListener("click", () => this.showGraphs());
     this.closeGraphsBtn?.addEventListener("click", () => this.hideGraphs());
-    this.inputLanguage?.addEventListener("change"), () => {
+    this.inputLanguage?.addEventListener("change", () => {
       currentLanguage = localStorage.getItem("language");
-    };
+      console.log(currentLanguage);
+      if (currentLanguage === "en") {
+        this.pas_placeholder.placeholder = "Enter SBP values (mmHg)";
+        this.pad_placeholder.placeholder = "Enter DBP values (mmHg)";
+      } else{
+        this.pas_placeholder.placeholder = "Ingrese los valores de SBP (mmHg)";
+        this.pad_placeholder.placeholder = "Ingrese los valores de DBP (mmHg)";
+      }
+    });
   }
 
   setupPredictionListener() {
@@ -63,7 +72,10 @@ export class PredictionView {
           } catch (error) {
             Swal.fire({
               title: "Error",
-              text: currentLanguage === "es" ? "Error al entrenar el modelo." : "Error while training the model.",
+              text:
+                currentLanguage === "es"
+                  ? "Error al entrenar el modelo."
+                  : "Error while training the model.",
               icon: "error",
               showConfirmButton: true,
             });
@@ -89,7 +101,10 @@ export class PredictionView {
         } catch (error) {
           Swal.fire({
             title: "Error",
-            text: currentLanguage === "es" ? "Error al obtener métricas." : "Error while getting metrics.",
+            text:
+              currentLanguage === "es"
+                ? "Error al obtener métricas."
+                : "Error while getting metrics.",
             icon: "error",
             showConfirmButton: true,
           });
@@ -118,15 +133,18 @@ export class PredictionView {
     const pasImg = this.createImage(
       graphs.pas,
       "Graph PAS",
-      currentLanguage === "es" ? "Relación entre PAS Real y PAS Predicho" : "Real PAS vs Predicted PAS",
+      currentLanguage === "es"
+        ? "Relación entre PAS Real y PAS Predicho"
+        : "Real PAS vs Predicted PAS",
       "pas"
     );
     const padImg = this.createImage(
       graphs.pad,
       "Graph PAD",
-      currentLanguage === "es" ? "Relación entre PAD Real y PAD Predicho" : "Real PAD vs Predicted PAD",
+      currentLanguage === "es"
+        ? "Relación entre PAD Real y PAD Predicho"
+        : "Real PAD vs Predicted PAD",
       "pad"
-
     );
 
     this.graphContainer.append(pasImg, padImg);
