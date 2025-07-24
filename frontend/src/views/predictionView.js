@@ -2,6 +2,10 @@ import Swal from "sweetalert2";
 import { PredictionViewModel } from "../viewmodels/PredictionViewModel.js";
 import { FirebaseService } from "../core/firebase.service.js";
 
+
+//Take the current language from local storage
+let currentLanguage = localStorage.getItem("language");
+
 export class PredictionView {
   constructor() {
     this.viewModel = new PredictionViewModel();
@@ -22,11 +26,15 @@ export class PredictionView {
     this.loaderPrediction = document.querySelector(".loader-prediction");
     this.confidenceElement = document.querySelector(".confidence");
     this.startPredictionsBtn = document.querySelector(".start-predictions");
+    this.inputLanguage = document.getElementById("language-toggle");
   }
 
   setupEventListeners() {
     this.advancedOptionsBtn?.addEventListener("click", () => this.showGraphs());
     this.closeGraphsBtn?.addEventListener("click", () => this.hideGraphs());
+    this.inputLanguage?.addEventListener("change"), () => {
+      currentLanguage = localStorage.getItem("language");
+    };
   }
 
   setupPredictionListener() {
@@ -55,7 +63,7 @@ export class PredictionView {
           } catch (error) {
             Swal.fire({
               title: "Error",
-              text: "Error al entrenar el modelo.",
+              text: currentLanguage === "es" ? "Error al entrenar el modelo." : "Error while training the model.",
               icon: "error",
               showConfirmButton: true,
             });
@@ -81,7 +89,7 @@ export class PredictionView {
         } catch (error) {
           Swal.fire({
             title: "Error",
-            text: "Error al obtener las métricas.",
+            text: currentLanguage === "es" ? "Error al obtener métricas." : "Error while getting metrics.",
             icon: "error",
             showConfirmButton: true,
           });
@@ -110,13 +118,13 @@ export class PredictionView {
     const pasImg = this.createImage(
       graphs.pas,
       "Graph PAS",
-      "Relación entre PAS Real y PAS Predicho",
+      currentLanguage === "es" ? "Relación entre PAS Real y PAS Predicho" : "Real PAS vs Predicted PAS",
       "pas"
     );
     const padImg = this.createImage(
       graphs.pad,
       "Graph PAD",
-      "Relación entre PAD Real y PAD Predicho",
+      currentLanguage === "es" ? "Relación entre PAD Real y PAD Predicho" : "Real PAD vs Predicted PAD",
       "pad"
 
     );

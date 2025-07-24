@@ -2,7 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/BloodPressureIcon" href="./assets/main-icon.ico" />
+    <link
+      rel="icon"
+      type="image/BloodPressureIcon"
+      href="./assets/main-icon.ico"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./src/style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -18,10 +22,22 @@
     <title>VitaPressure ❤️</title>
   </head>
   <body>
+    <center>
+      <div class="switch">
+        <input
+          id="language-toggle"
+          class="check-toggle check-toggle-round-flat"
+          type="checkbox"
+        />
+        <label for="language-toggle"></label>
+        <span class="on"><img  class="es-flag" src="./assets/es-flag.png" alt="Spanish Flag"></span>
+        <span class="off"><img  class="en-flag" src="./assets/en-flag.png" alt="English Flag"></span>
+      </div>
+    </center>
     <main>
       <header>
-        <h1>Sistema de Mediciones Médicas</h1>
-        <p>
+        <h1 data-i8n="title">Sistema de Mediciones Médicas</h1>
+        <p data-i8n="description">
           Bienvenido al sistema de mediciones. Por favor, siga los pasos a
           continuación para tomar y registrar sus mediciones.
         </p>
@@ -29,7 +45,7 @@
       <div class="container">
         <div class="esp-state">
           <div class="show-state">
-            <h3 class="info-state">Estado del ESP:</h3>
+            <h3 data-i8n="info_state_esp" class="info-state">Estado del ESP:</h3>
             <div class="esp-online"></div>
           </div>
         </div>
@@ -62,24 +78,24 @@
               src="./assets/wave-pulse-svgrepo-com.min.svg"
               alt="wave pulse icon"
             />
-            <h2>Tomar Mediciones del dispositivo</h2>
+            <h2 data-i8n="take_meditions_title">Tomar Mediciones del dispositivo</h2>
           </div>
-          <label for="opciones-esp">Elige una opción:</label>
+          <label data-i8n="choose_option" for="opciones-esp">Elige una opción:</label>
           <select id="opciones-esp">
-            <option value="1">Reposo</option>
-            <option value="2">
+            <option data-i8n="input_option_1" value="1">Reposo</option>
+            <option data-i8n="input_option_2" value="2">
               Recuperación inmediata (al terminar el ejercicio)
             </option>
-            <option value="3">Recuperación tardía (2 minutos después)</option>
-            <option value="4">Ejercicio de relajación (técnica 4-6-8)</option>
-            <option value="5">Segunda recuperación inmediata</option>
+            <option data-i8n="input_option_3" value="3">Recuperación tardía (2 minutos después)</option>
+            <option data-i8n="input_option_4" value="4">Ejercicio de relajación (técnica 4-6-8)</option>
+            <option data-i8n="input_option_5" value="5">Segunda recuperación inmediata</option>
           </select>
 
           <!-- <button id="tomarBtn">Tomar Mediciones</button> -->
-           <div class="loader-button-container">
-              <button id="tomarBtn">Tomar Mediciones</button>
-              <span class="loader"></span>
-           </div>
+          <div class="loader-button-container">
+            <button data-i8n="take_meditions_button" id="tomarBtn">Tomar Mediciones</button>
+            <span class="loader"></span>
+          </div>
 
           <div class="oximeter-container">
             <img
@@ -115,63 +131,62 @@
               src="./assets/document-add-svgrepo-com.min.svg"
               alt="wave pulse icon"
             />
-            <h2>Introducir Mediciones</h2>
+            <h2 data-i8n="input_title" >Introducir Mediciones</h2>
           </div>
-          <label for="opciones">Elige una opción:</label>
+          <label data-i8n="choose_option" for="opciones">Elige una opción:</label>
           <select id="opciones">
-            <option value="1">Reposo</option>
-            <option value="2">
+            <option data-i8n="input_option_1" value="1">Reposo</option>
+            <option data-i8n="input_option_2" value="2">
               Recuperación inmediata (al terminar el ejercicio)
             </option>
-            <option value="3">Recuperación tardía (2 minutos después)</option>
-            <option value="4">Ejercicio de relajación (técnica 4-6-8)</option>
-            <option value="5">Segunda recuperación inmediata</option>
+            <option data-i8n="input_option_3" value="3">Recuperación tardía (2 minutos después)</option>
+            <option data-i8n="input_option_4" value="4">Ejercicio de relajación (técnica 4-6-8)</option>
+            <option data-i8n="input_option_5" value="5">Segunda recuperación inmediata</option>
           </select>
-          <label for="pas">PAS:</label>
-          <input type="number" id="pas" placeholder="Introduce PAS" />
+          <label data-i8n="PAS_title" for="pas">Presión Arterial Sistólica:</label>
+          <input  type="number" id="pas" placeholder="Introduce PAS" />
           <br />
-          <label for="pad">PAD:</label>
+          <label data-i8n="PAD_title" for="pad">Presión Arterial Diastólica:</label>
           <input type="number" id="pad" placeholder="Introduce PAD" />
           <br />
-          <button id="guardarBtn">Guardar Mediciones</button>
+          <button data-i8n="save_button" id="guardarBtn">Guardar Mediciones</button>
         </div>
-        <button class="start-predictions">Empezar a hacer predicciones</button>
+        <button data-i8n="before_prediction_button" class="start-predictions">Empezar a hacer predicciones</button>
       </div>
 
       <div class="container-predictions">
         <img id="arrow-l" src="./assets/arrow-left.png" alt="Volver" />
         <div>
-          <h2>Resultado de la Predicción</h2>
+          <h2 data-i8n="prediction_result_title">Resultado de la Predicción</h2>
           <span class="loader-prediction"></span>
         </div>
         <div class="prediction-content">
           <div class="prediction-box">
-            <p class="prediction-label">Presión Arterial Sistólica Estimada:</p>
+            <p data-i8n="PAS_prediction_title" class="prediction-label">Presión Arterial Sistólica Estimada:</p>
             <span class="prediction-pas-value">0 mmHg</span>
           </div>
 
           <div class="prediction-box">
-            <p class="prediction-label">
+            <p data-i8n="PAD_prediction_title" class="prediction-label">
               Presión Arterial Diastólica Estimada:
             </p>
             <span class="prediction-pad-value">0 mmHg</span>
           </div>
 
-          <p class="confidence">
+          <p data-i8n="confidence_title" class="confidence">
             Nivel de confianza del modelo: <strong>0%</strong>
           </p>
           <div class="loader-advanced-options">
-            <button class="advanced-options">Opciones avanzadas..</button>
-            <span class="loader-images"></span>            
+            <button data-i8n="advanced_options_button" class="advanced-options">Opciones avanzadas..</button>
+            <span class="loader-images"></span>
             <div class="prediction-graph">
-                <!--GRAPHICS -->
-              <button class="close-graphs-button">Volver</button>
+              <!--GRAPHICS -->
+              <button data-i8n="close_graphs_button" class="close-graphs-button">Volver</button>
             </div>
-
           </div>
         </div>
       </div>
-      <footer>
+      <footer data-i8n="footer">
         © 2025 Sistema de Mediciones Médicas. Todos los derechos reservados.
       </footer>
     </main>

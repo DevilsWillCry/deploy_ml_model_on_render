@@ -1,6 +1,9 @@
 import Swal from "sweetalert2";
 import { MeasurementViewModel } from "../viewmodels/MeasurementViewModel.js";
 import { FirebaseService } from "../core/firebase.service.js";
+
+let currentLanguage = localStorage.getItem("language");
+
 export class MeasurementView {
   constructor() {
     this.viewModel = new MeasurementViewModel();
@@ -20,6 +23,7 @@ export class MeasurementView {
     this.meditionSelectEsp = document.getElementById("opciones-esp");
     this.heartElement = document.querySelector(".heart");
     this.loaderElement = document.querySelector(".loader");
+    this.inputLanguage = document.getElementById("language-toggle");
   }
 
   setupEventListeners() {
@@ -36,6 +40,9 @@ export class MeasurementView {
     this.meditionSelectEsp.addEventListener("change", (e) => {
       this.viewModel.opcionSeleccionadaEsp = e.target.value;
     });
+    this.inputLanguage.addEventListener("change", () => {
+      currentLanguage = localStorage.getItem("language");
+    });
   }
 
   setupMeasurementListener() {
@@ -51,7 +58,7 @@ export class MeasurementView {
         this.loaderElement.style.display = "none";
         if(this.count > 0){
           if(this.viewModel.saveMeasurementEsp("measurement-esp")){
-            Swal.fire("¡Éxito!", "Medición guardada correctamente.", "success");
+            Swal.fire(currentLanguage === "es" ? "¡Éxito!" : "Success", currentLanguage === "es" ? "PAS y PAD guardados correctamente." : "PAS and PAD saved successfully.", "success");
           }
         }
       }
@@ -108,7 +115,7 @@ export class MeasurementView {
         this.padInput.value,
         "measurement"
       );
-      Swal.fire("¡Éxito!", "PAS y PAD guardados correctamente.", "success");
+      Swal.fire(currentLanguage === "es" ? "¡Éxito!" : "Success", currentLanguage === "es" ? "PAS y PAD guardados correctamente." : "PAS and PAD saved successfully.", "success");
     } catch (error) {
       Swal.fire("Error", error.message, "error");
     }
@@ -116,12 +123,12 @@ export class MeasurementView {
 
   async takeMeasurementHandler() {
     const result = await Swal.fire({
-      title: "¿Estás seguro?",
-      text: "Se enviará la señal para tomar la medición.",
+      title: currentLanguage === "es" ? "¿Estar seguro?" : "Are you sure?",
+      text: currentLanguage === "es" ? "Se enviarán las mediciones." : "Measurements will be sent.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, enviar",
-      cancelButtonText: "Cancelar",
+      confirmButtonText: currentLanguage === "es" ? "Enviar" : "Send",
+      cancelButtonText: currentLanguage === "es" ? "Cancelar" : "Cancel",
     });
 
     if (result.isConfirmed) {
@@ -129,8 +136,8 @@ export class MeasurementView {
         await this.viewModel.takeMeasurement();
         let timerInterval;
         Swal.fire({
-          title: "¡Éxito!",
-          html: "Esta alerta se cerrará en <b></b> milisegundos.",
+          title: currentLanguage === "es" ? "Exito" : "Success",
+          html: currentLanguage === "es" ? "Mediciones enviadas correctamente en <b></b> ms." : "Measurements sent successfully in <b></b> ms.",
           icon: "success",
           timer: 1000,
           timerProgressBar: true,
@@ -152,12 +159,12 @@ export class MeasurementView {
 
   async startPredictionsHandler() {
     const result = await Swal.fire({
-      title: "¿Estás seguro?",
-      text: "Se enviarán las mediciones para predicciones.",
+      title: currentLanguage === "es" ? "¿Estar seguro?" : "Are you sure?",
+      text: currentLanguage === "es" ? "Se enviarán las mediciones para predicciones." : "Measurements will be sent for predictions.",
       icon: "question",
       showCancelButton: true,
-      confirmButtonText: "Sí, enviar",
-      cancelButtonText: "Cancelar",
+      confirmButtonText: currentLanguage === "es" ? "Enviar" : "Send",
+      cancelButtonText: currentLanguage === "es" ? "Cancelar" : "Cancel",
     });
 
     if (result.isConfirmed) {

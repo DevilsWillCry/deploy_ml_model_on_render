@@ -3,6 +3,13 @@
 import { FirebaseService } from "./core/firebase.service.js";
 import { MeasurementView } from "./views/measurementView.js";
 import { PredictionView } from "./views/predictionView.js";
+import { updateLanguage } from "./i8n/languageManager.js";
+
+//Set language on local storage
+if (!localStorage.getItem("language")) localStorage.setItem("language", "es");
+
+
+updateLanguage();
 
 const container = document.querySelector(".container");
 const containerPredictions = document.querySelector(".container-predictions");
