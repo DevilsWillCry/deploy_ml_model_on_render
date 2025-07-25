@@ -39,7 +39,7 @@ export class PredictionView {
       if (currentLanguage === "en") {
         this.pas_placeholder.placeholder = "Enter SBP values (mmHg)";
         this.pad_placeholder.placeholder = "Enter DBP values (mmHg)";
-      } else{
+      } else {
         this.pas_placeholder.placeholder = "Ingrese los valores de SBP (mmHg)";
         this.pad_placeholder.placeholder = "Ingrese los valores de DBP (mmHg)";
       }
@@ -95,9 +95,11 @@ export class PredictionView {
 
         try {
           const metrics = await this.viewModel.getMetrics();
-          this.confidenceElement.textContent = `Nivel de confianza del modelo: ${metrics.result.toFixed(
-            2
-          )}%`;
+          this.confidenceElement.textContent = `${
+            currentLanguage === "es"
+              ? "Nivel de confianza del modelo:"
+              : "Model confidence level:"
+          } ${metrics.result.toFixed(2)}%`;
         } catch (error) {
           Swal.fire({
             title: "Error",
@@ -123,7 +125,7 @@ export class PredictionView {
       const graphs = await this.viewModel.getGraphs();
       this.renderGraphs(graphs);
     } catch (error) {
-      Swal.fire("Error", "Error al mostrar gráficos", "error");
+      Swal.fire("Error", currentLanguage === "es" ? "Error al obtener gráficos." : "Error while getting graphs.", "error");
     } finally {
       this.loaderImages.style.display = "none";
     }

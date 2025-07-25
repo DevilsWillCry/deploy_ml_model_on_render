@@ -117,7 +117,7 @@ export class MeasurementView {
       );
       Swal.fire(currentLanguage === "es" ? "¡Éxito!" : "Success", currentLanguage === "es" ? "PAS y PAD guardados correctamente." : "PAS and PAD saved successfully.", "success");
     } catch (error) {
-      Swal.fire("Error", error.message, "error");
+      Swal.fire("Error", currentLanguage === "es" ? "Por favor, ingresa ambos valores (PAS y PAD)." : "Please enter both values (PAS and PAD).", "error");
     }
   }
 
