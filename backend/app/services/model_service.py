@@ -2,7 +2,12 @@ import joblib
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
+from sklearn.multioutput import MultiOutputRegressor
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.svm import SVR
+from sklearn.model_selection import cross_val_score
+from sklearn.metrics import make_scorer
 from sklearn.model_selection import train_test_split
 from sklearn.utils.validation import check_is_fitted
 from sklearn.exceptions import NotFittedError
@@ -19,8 +24,8 @@ from ..services.data_service import DataService
 class ModelService:
     def __init__(self):
         self.scaler = StandardScaler()
-        self.model_pas = RandomForestRegressor(n_estimators=100, random_state=42)
-        self.model_pad = RandomForestRegressor(n_estimators=100, random_state=42)
+        self.model_pas =  RandomForestRegressor(n_estimators=100, max_depth=None, min_samples_leaf=1, random_state=42)
+        self.model_pad =  RandomForestRegressor(n_estimators=100, max_depth=None, min_samples_leaf=1, random_state=42)
         self.models_dir = "models"
         os.makedirs(self.models_dir, exist_ok=True)
         self._load_models() # Intenta cargar modelos existentes al iniciar
@@ -56,8 +61,8 @@ class ModelService:
     def _initialize_new_models(self):
         """Reinicializa modelos nuevos"""
         self.scaler = StandardScaler()
-        self.model_pas = RandomForestRegressor(n_estimators=100, random_state=42)
-        self.model_pad = RandomForestRegressor(n_estimators=100, random_state=42)
+        self.model_pas =  RandomForestRegressor(n_estimators=100, max_depth=None, min_samples_leaf=1, random_state=42)
+        self.model_pad =  RandomForestRegressor(n_estimators=100, max_depth=None, min_samples_leaf=1, random_state=42)
     
     def is_trained(self) -> bool:
         """Verifica si los modelos están listos para predecir"""
@@ -66,7 +71,6 @@ class ModelService:
             return True
         except:
             return False
-
     def train_models(self, df: pd.DataFrame):
 
         """Guarda los datos procesados en un archivo CSV"""
@@ -84,8 +88,16 @@ class ModelService:
         # Escalado
         X_scaled = self.scaler.fit_transform(X)
 
-        pas_errors = []
-        pad_errors = []
+        # Almacenar métricas por pliegue
+        pas_mae_errors = []
+        pas_mse_errors = []
+        pas_rmse_errors = []
+        pas_r2_scores = []
+
+        pad_mae_errors = []
+        pad_mse_errors = []
+        pad_rmse_errors = []
+        pad_r2_scores = []
 
         for fold, (train_index, test_index) in enumerate(kf.split(X_scaled), 1):
             X_train, X_test = X_scaled[train_index], X_scaled[test_index]
@@ -95,34 +107,52 @@ class ModelService:
             # PAS
             self.model_pas.fit(X_train, y_train_pas)
             y_pred_pas = self.model_pas.predict(X_test)
+
             mae_pas = mean_absolute_error(y_test_pas, y_pred_pas)
-            pas_errors.append(mae_pas)
+            mse_pas = mean_squared_error(y_test_pas, y_pred_pas)
+            rmse_pas = np.sqrt(mse_pas)
+            r2_pas = r2_score(y_test_pas, y_pred_pas)
+
+            pas_mae_errors.append(mae_pas)
+            pas_mse_errors.append(mse_pas)
+            pas_rmse_errors.append(rmse_pas)
+            pas_r2_scores.append(r2_pas)
 
             # PAD
             self.model_pad.fit(X_train, y_train_pad)
             y_pred_pad = self.model_pad.predict(X_test)
+
             mae_pad = mean_absolute_error(y_test_pad, y_pred_pad)
-            pad_errors.append(mae_pad)
+            mse_pad = mean_squared_error(y_test_pad, y_pred_pad)
+            rmse_pad = np.sqrt(mse_pad)
+            r2_pad = r2_score(y_test_pad, y_pred_pad)
+
+            pad_mae_errors.append(mae_pad)
+            pad_mse_errors.append(mse_pad)
+            pad_rmse_errors.append(rmse_pad)
+            pad_r2_scores.append(r2_pad)
 
             print(f"Fold {fold} - MAE PAS: {mae_pas:.2f}, MAE PAD: {mae_pad:.2f}")
 
-        # Imprimir información de evaluación
+        # Resultados finales
         print("\n--- Validación cruzada finalizada ---")
-        print(f"MAE PAS promedio (5-fold): {sum(pas_errors)/len(pas_errors):.2f}")
-        print(f"MAE PAD promedio (5-fold): {sum(pad_errors)/len(pad_errors):.2f}")
-        print("Cantidad de datos en y_test_pas:", len(y_test_pas))
-        print("Valores únicos en y_test_pas:", np.unique(y_test_pas))
-        print("Cantidad de datos en y_test_pad:", len(y_test_pad))
-        print("Valores únicos en y_test_pad:", np.unique(y_test_pad))
+        def resumen(metricas, nombre):
+            print(f"{nombre} PAS: {np.mean(metricas[0]):.2f} ± {np.std(metricas[0]):.2f}")
+            print(f"{nombre} PAD: {np.mean(metricas[1]):.2f} ± {np.std(metricas[1]):.2f}")
+
+        resumen((pas_mae_errors, pad_mae_errors), "MAE")
+        resumen((pas_mse_errors, pad_mse_errors), "MSE")
+        resumen((pas_rmse_errors, pad_rmse_errors), "RMSE")
+        resumen((pas_r2_scores, pad_r2_scores), "R²")
 
         # Entrenamiento final con todos los datos disponibles
         self.model_pas.fit(X_scaled, y_pas)
         self.model_pad.fit(X_scaled, y_pad)
 
-
         # Almacenar evaluaciones
         joblib.dump({'y_true': y_test_pas, 'y_pred': y_pred_pas}, 'models/eval_pas.joblib')
         joblib.dump({'y_true': y_test_pad, 'y_pred': y_pred_pad}, 'models/eval_pad.joblib')
+
 
         # Actualizar estado en Firebase
         firebase_repository = FirebaseRepository()
@@ -133,6 +163,8 @@ class ModelService:
         self._save_models()
 
         return {"message": "Modelo entrenado y guardado con éxito"}
+
+
 
     
     def predict(self, data: Dict[str, float]) -> List[float]:

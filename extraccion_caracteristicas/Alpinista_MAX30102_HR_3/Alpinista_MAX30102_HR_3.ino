@@ -265,9 +265,9 @@ void loop() {
   // Guardamos el valor anterior
   muestra_previa = muestra_actual;
   // ... y leemos la nueva
-  float muestra_bruta = 120000.0f - 10.0f * irValue;
+  long muestra_bruta = 120000 - 10*irValue;
 
-  float filtrada_sg  = savitzkyGolay(muestra_bruta);
+  long filtrada_sg  = savitzkyGolay(muestra_bruta);
   muestra_actual     = filtrada_sg;
 
   // #1: Se calcula e imprime por pantalla el HR promedio con base en el intervalo seleccionado
@@ -405,7 +405,7 @@ void loop() {
 
   if (pinPrint <= 512 ){
 
-    if (digitalRead(PIN_SWITCH) == LOW && !tomandoDatos) {
+    if (digitalRead(PIN_SWITCH) == HIGH && !tomandoDatos) {
       ReadyToPredict = true;
       /*      
       Serial.print(t_cresta);
