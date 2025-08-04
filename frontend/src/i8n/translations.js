@@ -23,7 +23,7 @@ export const translations = {
     prediction_result_title: "Resultado de la Predicción",
     advanced_options_button: "Opciones avanzadas..",
     close_graphs_button: "Volver",
-    footer: "© 2025 Sistema de Mediciones Médicas. Todos los derechos reservados."
+    footer: "© 2025 AMGI Metrics. Todos los derechos reservados."
   },
   en: {
     title: "Blood Pressure Measurement Application",
@@ -48,6 +48,6 @@ export const translations = {
     prediction_result_title: "Predicted BP values",
     advanced_options_button: "Advanced Options..",
     close_graphs_button: "Back",
-    footer: "© 2025 Blood pressure measurement application. All rights reserved."
+    footer: "© 2025 AMGI Metrics. All rights reserved."
   }
 };

@@ -982,3 +982,14 @@ input.check-toggle-round-flat + label:after {
 input.check-toggle-round-flat:checked + label:after {
   margin-left: 44px;
 }
+
+
+#logo-amgi-metrics{
+  position: absolute;
+  bottom: 0px;
+  left: 10px;
+  width: 6rem;
+  height: 6rem;
+  object-fit: fill;
+
+}
