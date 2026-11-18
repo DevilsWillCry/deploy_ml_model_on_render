@@ -1,0 +1,35 @@
+Tabla 1. Hiperparámetros de Regresión Lineal (Linear Regression),,
+Hiperparámetro,Valor,Descripción
+fit_intercept,True,Inclusión del término independiente
+positive,False,Restricción de coeficientes positivos
+copy_X,True,Copia de los datos de entrada
+n_jobs,None (1 proceso),Número de trabajos paralelos
+tol,1e-6 (solo scikit-learn >= 1.7; no afecta a la solución por mínimos cuadrados),"Tolerancia de convergencia, si aplica según versión"
+,,
+Tabla 2. Hiperparámetros de Support Vector Regression (SVR),,
+Hiperparámetro,Valor,Descripción
+kernel,rbf (función de base radial gaussiana),Tipo de función kernel
+C,100,Parámetro de regularización
+epsilon,0.1 mmHg,Margen de tolerancia del error
+gamma,scale = 1/(n_features·Var(X)) = 0.2 con 5 variables estandarizadas,Coeficiente de influencia del kernel
+degree,3 (no aplica con kernel rbf),Grado del kernel polinomial
+coef0,0.0 (no aplica con kernel rbf),Término independiente del kernel
+shrinking,True,Uso de heurística de reducción
+tol,1e-3,Tolerancia de convergencia
+cache_size,200,Tamaño de caché en MB
+max_iter,-1 (sin límite),Número máximo de iteraciones
+,,
+Tabla 3. Hiperparámetros de Random Forest Regressor,,
+Hiperparámetro,Valor,Descripción
+n_estimators,100,Número de árboles
+criterion,squared_error (MSE),Función para medir la calidad de las divisiones
+max_depth,None (sin límite; profundidad alcanzada 6–21 niveles; media 10.5),Profundidad máxima de los árboles
+min_samples_split,2,Mínimo de muestras para dividir un nodo
+min_samples_leaf,1,Mínimo de muestras por hoja
+max_features,1.0 (las 5 variables en cada división),Número de características consideradas por división
+bootstrap,True,Uso de muestreo con reemplazo
+max_samples,None (100 % de las muestras por árbol),Cantidad de muestras para entrenar cada árbol
+random_state,42,Semilla de aleatoriedad
+max_leaf_nodes,None (sin límite; hojas alcanzadas 14–62 por árbol; media 34.4),Número máximo de hojas por árbol
+min_impurity_decrease,0.0,Reducción mínima de impureza para realizar una división
+n_jobs,None (1 proceso),Número de trabajos paralelos
